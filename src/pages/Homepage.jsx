@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Star, Users, Calendar, ArrowRight } from 'lucide-react';
-import { SearchIcon } from '../components/Icons.jsx';
+import { SearchIcon, ItineraryIcon, MapIcon, BudgetIcon, CollaborateIcon } from '../components/Icons.jsx';
+import FeatureCard from '../components/FeatureCard.jsx';
 
 const Homepage = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -128,7 +129,47 @@ const Homepage = () => {
 
 
 
-      {/* Featured Destinations */}
+      {/* Features Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-[16px] font-bold text-[#3ABEFF] mb-4 font-poppins w-[366px] h-[29px] leading-[180%] mx-auto">
+              Our Features
+            </h2>
+            <h3 className="text-[27px] font-bold text-black mb-4 font-poppins w-[366px] h-[32px] leading-[120%] mx-auto">
+              Why choose TravelTrack?
+            </h3>
+          </div>
+          
+          <div className="grid md:grid-cols-4 gap-3">
+            <FeatureCard
+              icon={<ItineraryIcon />}
+              title="Itinerary Builder"
+              description="Plan day-by-day trips effortlessly"
+            />
+            
+            <FeatureCard
+              icon={<MapIcon />}
+              title="Map View"
+              description="See your whole journey on an interactive map"
+            />
+            
+            <FeatureCard
+              icon={<BudgetIcon />}
+              title="Budget Tracker"
+              description="Stay within budget with smart planning"
+            />
+            
+            <FeatureCard
+              icon={<CollaborateIcon />}
+              title="Collaborate"
+              description="Invite friends and plan together"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Popular Destinations */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
@@ -140,9 +181,9 @@ const Homepage = () => {
             </p>
           </div>
           
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
             {featuredDestinations.map((destination) => (
-              <div key={destination.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group">
+              <div key={destination.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group w-[340px] h-[410px]">
                 <div className="relative h-64 overflow-hidden">
                   <img
                     src={destination.image}
