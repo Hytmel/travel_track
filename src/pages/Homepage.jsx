@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, MapPin, Star, Users, Calendar, ArrowRight } from 'lucide-react';
+import { MapPin, Star, Users, Calendar, ArrowRight } from 'lucide-react';
+import { SearchIcon } from '../components/Icons.jsx';
 
 const Homepage = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -90,17 +91,17 @@ const Homepage = () => {
             {/* Search Bar */}
             <form onSubmit={handleSearch} className="max-w-2xl mx-auto mb-8">
               <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-6 w-6" />
+                <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2" />
                 <input
                   type="text"
                   placeholder="Where do you want to go?"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 text-lg text-gray-900 bg-white rounded-full shadow-lg focus:outline-none focus:ring-4 focus:ring-orange-300 transition-all"
+                  className="w-full pl-12 pr-4 py-4 text-lg text-gray-900 bg-white rounded-full shadow-lg focus:outline-none transition-all font-montserrat font-medium text-[18px] placeholder:text-black/25"
                 />
                 <button
                   type="submit"
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 px-6 py-2 bg-orange-500 text-white rounded-full hover:bg-orange-600 transition-colors font-medium"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 px-6 py-2 bg-[#3ABEFF] text-white rounded-full hover:bg-[#3ABEFF]/90 transition-colors font-normal text-base font-montserrat"
                 >
                   Search
                 </button>
@@ -110,64 +111,22 @@ const Homepage = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link
                 to="/itinerary"
-                className="px-8 py-4 bg-orange-500 text-white font-semibold rounded-full hover:bg-orange-600 transition-all hover:scale-105 shadow-lg"
+                className="w-[224px] h-[40px] flex items-center justify-center bg-[#000000]/13 border border-black/13 backdrop-blur-sm text-white font-normal text-[18px] font-poppins rounded-[34px] hover:bg-[#FFFFFF]/30 transition-all duration-500 shadow-lg"
               >
-                Start Planning
+                Explore Destinations
               </Link>
               <Link
                 to="/explore"
-                className="px-8 py-4 bg-white/20 backdrop-blur-sm text-white font-semibold rounded-full hover:bg-white/30 transition-all border border-white/30"
+                className="w-[224px] h-[40px] flex items-center justify-center bg-[#000000]/13 border border-black/13 backdrop-blur-sm text-white font-normal text-[18px] font-poppins rounded-[34px] hover:bg-[#3ABEFF]/40 transition-all duration-500 shadow-lg"
               >
-                Explore Destinations
+                Start planning your trip
               </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Travel Stats Section */}
-      <section className="py-20 bg-gradient-to-br from-sky-50 to-blue-100">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Join Thousands of Happy Travelers
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Our community has planned amazing adventures across the globe.
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-4 gap-8">
-            <div className="text-center group">
-              <div className="text-4xl sm:text-5xl font-bold text-sky-500 mb-2 group-hover:scale-110 transition-transform">
-                50K+
-              </div>
-              <div className="text-gray-600 font-medium">Trips Planned</div>
-            </div>
-            
-            <div className="text-center group">
-              <div className="text-4xl sm:text-5xl font-bold text-orange-500 mb-2 group-hover:scale-110 transition-transform">
-                180+
-              </div>
-              <div className="text-gray-600 font-medium">Countries Covered</div>
-            </div>
-            
-            <div className="text-center group">
-              <div className="text-4xl sm:text-5xl font-bold text-green-500 mb-2 group-hover:scale-110 transition-transform">
-                25K+
-              </div>
-              <div className="text-gray-600 font-medium">Active Users</div>
-            </div>
-            
-            <div className="text-center group">
-              <div className="text-4xl sm:text-5xl font-bold text-purple-500 mb-2 group-hover:scale-110 transition-transform">
-                4.9★
-              </div>
-              <div className="text-gray-600 font-medium">User Rating</div>
-            </div>
-          </div>
-        </div>
-      </section>
+
 
       {/* Featured Destinations */}
       <section className="py-20 bg-white">
