@@ -3,8 +3,9 @@ import { EyeIcon, EyeOffIcon, GoogleIcon, FacebookIcon } from '../components/Ico
 import TextInput from '../components/TextInput.jsx';
 import AuthButton from '../components/AuthButton.jsx';
 import ImageSlider from '../components/ImageSlider.jsx';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
+import { useAuth } from '../components/AuthContext.jsx';
 
 const sliderImages = [
   '/src/assets/images/login1.svg',
@@ -13,6 +14,10 @@ const sliderImages = [
 ];
 
 const SignupStep2 = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { login } = useAuth();
+  const prevForm = location.state || {};
   const [form, setForm] = useState({
     day: '',
     month: '',
@@ -33,8 +38,15 @@ const SignupStep2 = () => {
       return;
     }
     setError('');
-    // Submit logic here
-    alert('Sign up successful!');
+    // Combine info from both steps
+    login({
+      name: prevForm.firstName + ' ' + prevForm.lastName,
+      email: prevForm.email,
+      avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
+      dob: `${form.year}-${form.month}-${form.day}`,
+      gender: form.gender,
+    });
+    navigate('/');
   };
 
   const months = [

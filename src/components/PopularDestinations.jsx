@@ -70,4 +70,5 @@ const PopularDestinations = ({ featuredDestinations }) => (
   </section>
 );
 
+export { DestinationCard };
 export default PopularDestinations; 

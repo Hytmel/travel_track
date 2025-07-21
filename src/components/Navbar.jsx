@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, User } from 'lucide-react';
-import { Logo,EnglishFlag } from './Icons.jsx';
+import { Logo, EnglishFlag, NotificationIcon } from './Icons.jsx';
+import { useAuth } from './AuthContext.jsx';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const { user, logout } = useAuth();
 
   const isActive = (path) => location.pathname === path;
 
@@ -16,7 +18,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-white/95 backdrop-blur-md shadow-lg fixed top-4 z-50 left-4 right-4 rounded-[46px] border border-white/20">
+    <nav className="bg-white/95 backdrop-blur-md shadow-lg absolute top-4 z-50 left-4 right-4 rounded-[46px] border border-white/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-[60px]">
           {/* Logo */}
@@ -52,22 +54,37 @@ const Navbar = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </div>
-            
-            {/* Log in Button */}
-            <Link
-              to="/login"
-              className="px-4 py-2 text-[#3ABEFF] border border-[#3ABEFF] rounded-full hover:bg-[#3ABEFF] hover:text-white transition-colors duration-500 font-normal text-base font-poppins"
-            >
-              Log in
-            </Link>
-            
-            {/* Sign up Button */}
-            <Link
-              to="/signup"
-              className="px-4 py-2 bg-[#3ABEFF] text-white rounded-full hover:bg-[#3ABEFF]/90 transition-colors font-normal text-base font-poppins"
-            >
-              Sign up for free
-            </Link>
+            {user ? (
+              <>
+                {/* Notification Icon */}
+                <NotificationIcon className="cursor-pointer" />
+                {/* User Info */}
+                <div className="flex items-center space-x-2">
+                  <div className="flex flex-col items-end ml-3 mr-3">
+                    <span className="text-[#3ABEFF] font-poppins font-medium text-lg leading-tight">{user.name}</span>
+                    <span className="text-gray-400 text-xs font-poppins">{user.email}</span>
+                  </div>
+                  <img src={user.avatar} alt="avatar" className="w-10 h-10 rounded-full object-cover border-2 border-[#3ABEFF]" />
+                </div>
+              </>
+            ) : (
+              <>
+                {/* Log in Button */}
+                <Link
+                  to="/login"
+                  className="px-4 py-2 text-[#3ABEFF] border border-[#3ABEFF] rounded-full hover:bg-[#3ABEFF] hover:text-white transition-colors duration-500 font-normal text-base font-poppins"
+                >
+                  Log in
+                </Link>
+                {/* Sign up Button */}
+                <Link
+                  to="/signup"
+                  className="px-4 py-2 bg-[#3ABEFF] text-white rounded-full hover:bg-[#3ABEFF]/90 transition-colors font-normal text-base font-poppins"
+                >
+                  Sign up for free
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -108,21 +125,35 @@ const Navbar = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </div>
-                
-                <Link
-                  to="/login"
-                  className="block px-3 py-2 text-[#3ABEFF] border border-[#3ABEFF] rounded-full mx-3 mt-2 text-center font-normal text-base font-poppins hover:bg-[#3ABEFF] hover:text-white transition-colors duration-500"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Log in
-                </Link>
-                <Link
-                  to="/signup"
-                  className="block mx-3 mt-2 px-4 py-2 bg-[#3ABEFF] text-white text-center font-normal text-base font-poppins rounded-full hover:bg-[#3ABEFF]/90 transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Sign up for free
-                </Link>
+                {user ? (
+                  <>
+                    <NotificationIcon className="w-7 h-7 my-2" />
+                    <div className="flex items-center space-x-2 bg-white rounded-full px-4 py-1 shadow-sm">
+                      <div className="flex flex-col items-end mr-2">
+                        <span className="text-[#3ABEFF] font-poppins font-medium text-lg leading-tight">{user.name}</span>
+                        <span className="text-gray-400 text-xs font-poppins">{user.email}</span>
+                      </div>
+                      <img src={user.avatar} alt="avatar" className="w-10 h-10 rounded-full object-cover border-2 border-[#3ABEFF]" />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      to="/login"
+                      className="block px-3 py-2 text-[#3ABEFF] border border-[#3ABEFF] rounded-full mx-3 mt-2 text-center font-normal text-base font-poppins hover:bg-[#3ABEFF] hover:text-white transition-colors duration-500"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Log in
+                    </Link>
+                    <Link
+                      to="/signup"
+                      className="block mx-3 mt-2 px-4 py-2 bg-[#3ABEFF] text-white text-center font-normal text-base font-poppins rounded-full hover:bg-[#3ABEFF]/90 transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Sign up for free
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>

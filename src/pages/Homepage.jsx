@@ -3,9 +3,12 @@ import { Link } from 'react-router-dom';
 import { MapPin, Star, Users, Calendar, ArrowRight } from 'lucide-react';
 import { SearchIcon, ItineraryIcon, MapIcon, BudgetIcon, CollaborateIcon } from '../components/Icons.jsx';
 import FeatureCard from '../components/FeatureCard.jsx';
+import MyTripsSection from '../components/MyTripsSection.jsx';
+import { useAuth } from '../components/AuthContext.jsx';
 
 const Homepage = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const { user } = useAuth();
 
   const featuredDestinations = [
     {
@@ -127,112 +130,206 @@ const Homepage = () => {
         </div>
       </section>
 
+      {/* My Trips Section (only for logged-in users) */}
+      <MyTripsSection />
 
-
-      {/* Features Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-[16px] font-bold text-[#3ABEFF] mb-4 font-poppins w-[366px] h-[29px] leading-[180%] mx-auto">
-              Our Features
-            </h2>
-            <h3 className="text-[27px] font-bold text-black mb-4 font-poppins w-[366px] h-[32px] leading-[120%] mx-auto">
-              Why choose TravelTrack?
-            </h3>
-          </div>
-          
-          <div className="grid md:grid-cols-4 gap-3">
-            <FeatureCard
-              icon={<ItineraryIcon />}
-              title="Itinerary Builder"
-              description="Plan day-by-day trips effortlessly"
-            />
-            
-            <FeatureCard
-              icon={<MapIcon />}
-              title="Map View"
-              description="See your whole journey on an interactive map"
-            />
-            
-            <FeatureCard
-              icon={<BudgetIcon />}
-              title="Budget Tracker"
-              description="Stay within budget with smart planning"
-            />
-            
-            <FeatureCard
-              icon={<CollaborateIcon />}
-              title="Collaborate"
-              description="Invite friends and plan together"
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Popular Destinations */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Popular Destinations
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Discover the world's most amazing places, handpicked by travel experts.
-            </p>
-          </div>
-          
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
-            {featuredDestinations.map((destination) => (
-              <div key={destination.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group w-[340px] h-[450px]">
-                <div className="relative h-64 overflow-hidden">
-                  <img
-                    src={destination.image}
-                    alt={destination.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute top-4 left-4 px-3 py-1 bg-white/90 backdrop-blur-sm text-sm font-medium text-gray-700 rounded-full">
-                    {destination.type}
-                  </div>
-                </div>
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3
-                      className="w-[232px] h-[32px] font-poppins font-semibold text-[22px] leading-[32px] text-[#197CAC] mx-auto"
-                    >
-                      {destination.name}
-                    </h3>
-                    <div className="flex items-center space-x-1">
-                      <span className="text-sm font-medium text-gray-700">{destination.rating}</span>
-                      <Star className="h-4 w-4 text-yellow-400 fill-current" />
+      {user ? (
+        <>
+          {/* Popular Destinations first (max 3 cards) */}
+          <section className="pt-10 pb-20 bg-white">
+            <div className="max-w-7xl mx-auto px-4">
+              <div className="text-center mb-16">
+                <div className="text-sky-500 font-poppins font-semibold text-lg mb-2 text-center">Top destinations</div>
+                <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+                  Discover Your Destination
+                </h2>
+              </div>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
+                {featuredDestinations.slice(0, 3).map((destination) => (
+                  <div key={destination.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group w-[340px] h-[450px]">
+                    <div className="relative h-64 overflow-hidden">
+                      <img
+                        src={destination.image}
+                        alt={destination.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute top-4 left-4 px-3 py-1 bg-white/90 backdrop-blur-sm text-sm font-medium text-gray-700 rounded-full">
+                        {destination.type}
+                      </div>
+                    </div>
+                    <div className="p-6">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3
+                          className="w-[232px] h-[32px] font-poppins font-semibold text-[22px] leading-[32px] text-[#197CAC] mx-auto"
+                        >
+                          {destination.name}
+                        </h3>
+                        <div className="flex items-center space-x-1">
+                          <span className="text-sm font-medium text-gray-700">{destination.rating}</span>
+                          <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                        </div>
+                      </div>
+                      <p className="text-gray-600 mb-8 leading-relaxed">{destination.description}</p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-500">{destination.reviews.toLocaleString()} reviews</span>
+                        <Link
+                          to={`/explore?destination=${destination.name}`}
+                          className="flex items-center space-x-1 text-sky-600 hover:text-sky-700 font-medium transition-colors"
+                        >
+                          <span>Explore</span>
+                          <ArrowRight className="h-4 w-4" />
+                        </Link>
+                      </div>
                     </div>
                   </div>
-                  <p className="text-gray-600 mb-8 leading-relaxed">{destination.description}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-500">{destination.reviews.toLocaleString()} reviews</span>
-                    <Link
-                      to={`/explore?destination=${destination.name}`}
-                      className="flex items-center space-x-1 text-sky-600 hover:text-sky-700 font-medium transition-colors"
-                    >
-                      <span>Explore</span>
-                      <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </div>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
-          
-          <div className="text-center mt-12">
-            <Link
-              to="/explore"
-              className="inline-flex items-center justify-center w-[230px] h-[50px] px-4 py-2.5 rounded-[8px] border font-semibold text-[#197CAC] bg-white shadow-md hover:bg-[#E6F6FB] hover:border-[#197CAC] transition-colors"
-              style={{ borderColor: 'rgba(0,0,0,0.06)', backgroundColor: '#fff' }}
-            >
-              <span className="w-[166px] h-[20px] font-poppins font-semibold text-[14px] text-[#197CAC] flex items-center justify-center whitespace-nowrap">Explore All Destinations</span>
-            </Link>
-          </div>
-        </div>
-      </section>
+              <div className="text-center mt-12">
+                <Link
+                  to="/explore"
+                  className="inline-flex items-center justify-center w-[230px] h-[50px] px-4 py-2.5 rounded-[8px] border font-semibold text-[#197CAC] bg-white shadow-md hover:bg-[#E6F6FB] hover:border-[#197CAC] transition-colors"
+                  style={{ borderColor: 'rgba(0,0,0,0.06)', backgroundColor: '#fff' }}
+                >
+                  <span className="w-[166px] h-[20px] font-poppins font-semibold text-[14px] text-[#197CAC] flex items-center justify-center whitespace-nowrap">Explore All Destinations</span>
+                </Link>
+              </div>
+            </div>
+          </section>
+          {/* Features after */}
+          <section className="py-20 bg-white">
+            <div className="max-w-7xl mx-auto px-4">
+              <div className="text-center mb-16">
+                <h2 className="text-[16px] font-bold text-[#3ABEFF] mb-4 font-poppins w-[366px] h-[29px] leading-[180%] mx-auto">
+                  Our Features
+                </h2>
+                <h3 className="text-[27px] font-bold text-black mb-4 font-poppins w-[366px] h-[32px] leading-[120%] mx-auto">
+                  Why choose TravelTrack?
+                </h3>
+              </div>
+              <div className="grid md:grid-cols-4 gap-3">
+                <FeatureCard
+                  icon={<ItineraryIcon />}
+                  title="Itinerary Builder"
+                  description="Plan day-by-day trips effortlessly"
+                />
+                <FeatureCard
+                  icon={<MapIcon />}
+                  title="Map View"
+                  description="See your whole journey on an interactive map"
+                />
+                <FeatureCard
+                  icon={<BudgetIcon />}
+                  title="Budget Tracker"
+                  description="Stay within budget with smart planning"
+                />
+                <FeatureCard
+                  icon={<CollaborateIcon />}
+                  title="Collaborate"
+                  description="Invite friends and plan together"
+                />
+              </div>
+            </div>
+          </section>
+        </>
+      ) : (
+        <>
+          {/* Features first */}
+          <section className="py-20 bg-white">
+            <div className="max-w-7xl mx-auto px-4">
+              <div className="text-center mb-16">
+                <h2 className="text-[16px] font-bold text-[#3ABEFF] mb-4 font-poppins w-[366px] h-[29px] leading-[180%] mx-auto">
+                  Our Features
+                </h2>
+                <h3 className="text-[27px] font-bold text-black mb-4 font-poppins w-[366px] h-[32px] leading-[120%] mx-auto">
+                  Why choose TravelTrack?
+                </h3>
+              </div>
+              <div className="grid md:grid-cols-4 gap-3">
+                <FeatureCard
+                  icon={<ItineraryIcon />}
+                  title="Itinerary Builder"
+                  description="Plan day-by-day trips effortlessly"
+                />
+                <FeatureCard
+                  icon={<MapIcon />}
+                  title="Map View"
+                  description="See your whole journey on an interactive map"
+                />
+                <FeatureCard
+                  icon={<BudgetIcon />}
+                  title="Budget Tracker"
+                  description="Stay within budget with smart planning"
+                />
+                <FeatureCard
+                  icon={<CollaborateIcon />}
+                  title="Collaborate"
+                  description="Invite friends and plan together"
+                />
+              </div>
+            </div>
+          </section>
+          {/* Popular Destinations after */}
+          <section className="py-20 bg-white">
+            <div className="max-w-7xl mx-auto px-4">
+              <div className="text-center mb-16">
+                <div className="text-sky-500 font-poppins font-semibold text-lg mb-2 text-center">Top destinations</div>
+                <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+                  Discover your destination
+                </h2>
+              </div>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
+                {featuredDestinations.map((destination) => (
+                  <div key={destination.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group w-[340px] h-[450px]">
+                    <div className="relative h-64 overflow-hidden">
+                      <img
+                        src={destination.image}
+                        alt={destination.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute top-4 left-4 px-3 py-1 bg-white/90 backdrop-blur-sm text-sm font-medium text-gray-700 rounded-full">
+                        {destination.type}
+                      </div>
+                    </div>
+                    <div className="p-6">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3
+                          className="w-[232px] h-[32px] font-poppins font-semibold text-[22px] leading-[32px] text-[#197CAC] mx-auto"
+                        >
+                          {destination.name}
+                        </h3>
+                        <div className="flex items-center space-x-1">
+                          <span className="text-sm font-medium text-gray-700">{destination.rating}</span>
+                          <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                        </div>
+                      </div>
+                      <p className="text-gray-600 mb-8 leading-relaxed">{destination.description}</p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-500">{destination.reviews.toLocaleString()} reviews</span>
+                        <Link
+                          to={`/explore?destination=${destination.name}`}
+                          className="flex items-center space-x-1 text-sky-600 hover:text-sky-700 font-medium transition-colors"
+                        >
+                          <span>Explore</span>
+                          <ArrowRight className="h-4 w-4" />
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="text-center mt-12">
+                <Link
+                  to="/explore"
+                  className="inline-flex items-center justify-center w-[230px] h-[50px] px-4 py-2.5 rounded-[8px] border font-semibold text-[#197CAC] bg-white shadow-md hover:bg-[#E6F6FB] hover:border-[#197CAC] transition-colors"
+                  style={{ borderColor: 'rgba(0,0,0,0.06)', backgroundColor: '#fff' }}
+                >
+                  <span className="w-[166px] h-[20px] font-poppins font-semibold text-[14px] text-[#197CAC] flex items-center justify-center whitespace-nowrap">Explore All Destinations</span>
+                </Link>
+              </div>
+            </div>
+          </section>
+        </>
+      )}
 
       {/* CTA Section */}
       <section className="relative py-20 text-white">

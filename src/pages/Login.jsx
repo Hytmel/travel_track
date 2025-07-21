@@ -1,7 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { EyeIcon, EyeOffIcon, GoogleIcon, FacebookIcon } from '../components/Icons.jsx';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../components/AuthContext.jsx';
 
 const sliderImages = [
   '/src/assets/images/login1.svg',
@@ -16,6 +17,8 @@ const Login = () => {
   const isDragging = useRef(false);
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   // Touch events for mobile
   const handleTouchStart = (e) => {
@@ -74,8 +77,13 @@ const Login = () => {
               return;
             }
             setError('');
-            // Submit logic here
-            alert('Login successful!');
+            // Demo user info, replace with real data after backend integration
+            login({
+              name: 'Bouhafs Rim',
+              email: form.email,
+              avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
+            });
+            navigate('/');
           }}>
             <div>
               <input

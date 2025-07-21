@@ -3,7 +3,8 @@ import { EyeIcon, EyeOffIcon, GoogleIcon, FacebookIcon } from '../components/Ico
 import TextInput from '../components/TextInput.jsx';
 import AuthButton from '../components/AuthButton.jsx';
 import ImageSlider from '../components/ImageSlider.jsx';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../components/AuthContext.jsx';
 
 const sliderImages = [
   '/src/assets/images/login1.svg',
@@ -22,6 +23,8 @@ const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -34,7 +37,8 @@ const Signup = () => {
       return;
     }
     setError('');
-    window.location.href = '/signup-step2';
+    // Pass form data to step 2 via navigation state
+    navigate('/signup-step2', { state: { ...form } });
   };
 
   return (
