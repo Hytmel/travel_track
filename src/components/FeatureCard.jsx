@@ -2,7 +2,7 @@ import React from 'react';
 
 const FeatureCard = ({ icon, title, description }) => {
   return (
-    <div className="bg-white rounded-[7px] text-center w-[262px] h-[171px] px-[21px] py-[4px] shadow-xl border border-black/48 hover:shadow-2xl hover:scale-105 transition-all duration-500 ease-in-out">
+    <div className="bg-white rounded-[7px] text-center w-[262px] h-[210px] px-[21px] py-[4px] shadow-xl border border-black/48 hover:shadow-2xl hover:scale-105 transition-all duration-500 ease-in-out">
       <div className=" flex items-center justify-center mx-auto mb-6">
         {icon}
       </div>

@@ -183,7 +183,7 @@ const Homepage = () => {
           
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
             {featuredDestinations.map((destination) => (
-              <div key={destination.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group w-[340px] h-[410px]">
+              <div key={destination.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group w-[340px] h-[450px]">
                 <div className="relative h-64 overflow-hidden">
                   <img
                     src={destination.image}
@@ -196,13 +196,17 @@ const Homepage = () => {
                 </div>
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-xl font-semibold text-gray-900">{destination.name}</h3>
+                    <h3
+                      className="w-[232px] h-[32px] font-poppins font-semibold text-[22px] leading-[32px] text-[#197CAC] mx-auto"
+                    >
+                      {destination.name}
+                    </h3>
                     <div className="flex items-center space-x-1">
-                      <Star className="h-4 w-4 text-yellow-400 fill-current" />
                       <span className="text-sm font-medium text-gray-700">{destination.rating}</span>
+                      <Star className="h-4 w-4 text-yellow-400 fill-current" />
                     </div>
                   </div>
-                  <p className="text-gray-600 mb-4 leading-relaxed">{destination.description}</p>
+                  <p className="text-gray-600 mb-8 leading-relaxed">{destination.description}</p>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-500">{destination.reviews.toLocaleString()} reviews</span>
                     <Link
@@ -221,93 +225,11 @@ const Homepage = () => {
           <div className="text-center mt-12">
             <Link
               to="/explore"
-              className="inline-flex items-center space-x-2 px-8 py-4 bg-sky-500 text-white font-semibold rounded-full hover:bg-sky-600 transition-colors"
+              className="inline-flex items-center justify-center w-[230px] h-[50px] px-4 py-2.5 rounded-[8px] border font-semibold text-[#197CAC] bg-white shadow-md hover:bg-[#E6F6FB] hover:border-[#197CAC] transition-colors"
+              style={{ borderColor: 'rgba(0,0,0,0.06)', backgroundColor: '#fff' }}
             >
-              <span>View All Destinations</span>
-              <ArrowRight className="h-5 w-5" />
+              <span className="w-[166px] h-[20px] font-poppins font-semibold text-[14px] text-[#197CAC] flex items-center justify-center whitespace-nowrap">Explore All Destinations</span>
             </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-slate-100">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              What Travelers Say
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Real stories from real travelers who've used TravelPlanner for their adventures.
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
-              <div className="flex items-center mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
-                ))}
-              </div>
-              <p className="text-gray-600 mb-6 leading-relaxed">
-                "TravelPlanner made organizing our European trip so much easier. The itinerary builder is intuitive and saved us hours of planning!"
-              </p>
-              <div className="flex items-center">
-                <img
-                  src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg"
-                  alt="Sarah Johnson"
-                  className="w-12 h-12 rounded-full object-cover mr-4"
-                />
-                <div>
-                  <div className="font-semibold text-gray-900">Sarah Johnson</div>
-                  <div className="text-sm text-gray-500">Traveled to 12 countries</div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
-              <div className="flex items-center mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
-                ))}
-              </div>
-              <p className="text-gray-600 mb-6 leading-relaxed">
-                "The collaborative features are amazing! My friends and I planned our group trip together in real-time. Highly recommend!"
-              </p>
-              <div className="flex items-center">
-                <img
-                  src="https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg"
-                  alt="Mike Chen"
-                  className="w-12 h-12 rounded-full object-cover mr-4"
-                />
-                <div>
-                  <div className="font-semibold text-gray-900">Mike Chen</div>
-                  <div className="text-sm text-gray-500">Adventure enthusiast</div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
-              <div className="flex items-center mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
-                ))}
-              </div>
-              <p className="text-gray-600 mb-6 leading-relaxed">
-                "Perfect for solo travelers like me. The destination recommendations helped me discover hidden gems I never would have found!"
-              </p>
-              <div className="flex items-center">
-                <img
-                  src="https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg"
-                  alt="Emma Rodriguez"
-                  className="w-12 h-12 rounded-full object-cover mr-4"
-                />
-                <div>
-                  <div className="font-semibold text-gray-900">Emma Rodriguez</div>
-                  <div className="text-sm text-gray-500">Solo traveler</div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -317,24 +239,21 @@ const Homepage = () => {
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: 'url(https://images.pexels.com/photos/1591373/pexels-photo-1591373.jpeg)'
+            backgroundImage: 'url(/src/assets/images/footer.svg)'
           }}
         ></div>
-        <div className="absolute inset-0 bg-black/50"></div>
+        <div className="absolute inset-0 backdrop-blur-sm"></div>
         <div className="max-w-4xl mx-auto px-4 text-center">
           <div className="relative">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-6">
-            Ready to Start Your Adventure?
+          <h2 className="text-3xl sm:text-4xl font-bold mb-20">
+            Start your next adventure today.
           </h2>
-          <p className="text-xl mb-8 opacity-90">
-            Join thousands of travelers who trust TravelPlanner for their perfect trips.
-          </p>
           <Link
             to="/itinerary"
-            className="inline-flex items-center space-x-2 px-8 py-4 bg-white text-orange-600 font-semibold rounded-full hover:bg-gray-50 transition-colors hover:scale-105 transform"
+            className="inline-flex items-center justify-center w-[280px] h-[48px] bg-white text-[#197CAC] font-semibold rounded-full hover:bg-gray-50 transition duration-300 hover:scale-105 transform"
           >
-            <span>Start Planning Your Trip</span>
-            <ArrowRight className="h-5 w-5" />
+            <span className="text-[#197CAC]">Start Planning Your Trip</span>
+            <ArrowRight className="h-5 w-5 text-[#197CAC]" />
           </Link>
           </div>
         </div>

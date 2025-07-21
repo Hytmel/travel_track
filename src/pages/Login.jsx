@@ -1,206 +1,190 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { EyeIcon, EyeOffIcon, GoogleIcon, FacebookIcon } from '../components/Icons.jsx';
 import { Link } from 'react-router-dom';
-import { MapPin, Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
+
+const sliderImages = [
+  '/src/assets/images/login1.svg',
+  '/src/assets/images/login2.svg',
+  '/src/assets/images/login3.svg',
+];
 
 const Login = () => {
-  const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-  });
+  const [current, setCurrent] = useState(0);
+  const startX = useRef(null);
+  const isDragging = useRef(false);
+  const [form, setForm] = useState({ email: '', password: '' });
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle login/signup logic here
-    console.log('Form submitted:', formData);
+  // Touch events for mobile
+  const handleTouchStart = (e) => {
+    startX.current = e.touches[0].clientX;
+  };
+  const handleTouchMove = (e) => {
+    if (startX.current === null) return;
+    const diff = e.touches[0].clientX - startX.current;
+    if (Math.abs(diff) > 50) {
+      if (diff < 0) handleNext();
+      else handlePrev();
+      startX.current = null;
+    }
+  };
+  const handleTouchEnd = () => {
+    startX.current = null;
   };
 
-  const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+  // Mouse events for desktop
+  const handleMouseDown = (e) => {
+    isDragging.current = true;
+    startX.current = e.clientX;
+  };
+  const handleMouseMove = (e) => {
+    if (!isDragging.current || startX.current === null) return;
+    const diff = e.clientX - startX.current;
+    if (Math.abs(diff) > 50) {
+      if (diff < 0) handleNext();
+      else handlePrev();
+      isDragging.current = false;
+      startX.current = null;
+    }
+  };
+  const handleMouseUp = () => {
+    isDragging.current = false;
+    startX.current = null;
+  };
+
+  const handleNext = () => {
+    setCurrent((prev) => (prev + 1) % sliderImages.length);
+  };
+  const handlePrev = () => {
+    setCurrent((prev) => (prev - 1 + sliderImages.length) % sliderImages.length);
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        {/* Header */}
-        <div className="text-center">
-          <Link to="/" className="flex items-center justify-center space-x-2 mb-6">
-            <MapPin className="h-10 w-10 text-sky-500" />
-            <span className="text-2xl font-bold text-gray-900">TravelPlanner</span>
-          </Link>
-          <h2 className="text-3xl font-bold text-gray-900">
-            {isLogin ? 'Welcome back' : 'Create your account'}
-          </h2>
-          <p className="mt-2 text-gray-600">
-            {isLogin ? 'Sign in to your account' : 'Start planning your next adventure'}
-          </p>
-        </div>
-
-        {/* Form */}
-        <div className="bg-white rounded-2xl shadow-lg p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {!isLogin && (
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                  Full Name
-                </label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                  <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    required={!isLogin}
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    className="w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
-                    placeholder="Enter your full name"
-                  />
-                </div>
-              </div>
-            )}
-
+    <div className="min-h-screen flex items-center justify-space-around bg-[#FCFCFC] font-poppins">
+      <div className="w-full h-screen flex flex-col md:flex-row items-center justify-center bg-white pt-10 pl-12">
+        {/* Left: Login Form */}
+        <div className="flex-1 flex flex-col justify-center pl-20 pt-17 pb-10 ">
+          <h2 className="font-poppins font-semibold text-[28px] text-[#197CAC] mb-8">Sign in to continue!</h2>
+          <form className="space-y-6" onSubmit={e => {
+            e.preventDefault();
+            if (!form.email || !form.password) {
+              setError('Please fill in both email and password.');
+              return;
+            }
+            setError('');
+            // Submit logic here
+            alert('Login successful!');
+          }}>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
-                  placeholder="Enter your email"
-                />
-              </div>
+              <input
+                id="email"
+                type="email"
+                className="w-full border-0 border-b border-gray-300 focus:border-[#197CAC] focus:ring-0 focus:outline-none text-base py-2 bg-transparent placeholder:text-gray-400 placeholder:font-poppins"
+                placeholder="Email"
+                value={form.email}
+                onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+              />
             </div>
-
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  className="w-full pl-10 pr-10 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
-                  placeholder="Enter your password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                </button>
-              </div>
+            <div className="relative">
+              <input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                className="w-full border-0 border-b border-gray-400 focus:border-[#197CAC] focus:ring-0 focus:outline-none text-base py-2 bg-transparent placeholder:text-gray-400 placeholder:font-poppins"
+                placeholder="Password"
+                value={form.password}
+                onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
+              />
+              <button
+                type="button"
+                className="absolute right-0 top-2.5 text-gray-500 hover:text-[#197CAC]"
+                onClick={() => setShowPassword((v) => !v)}
+                tabIndex={-1}
+                aria-label="Show password"
+              >
+                {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+              </button>
             </div>
-
-            {!isLogin && (
-              <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
-                  Confirm Password
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                  <input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type={showPassword ? 'text' : 'password'}
-                    required={!isLogin}
-                    value={formData.confirmPassword}
-                    onChange={handleInputChange}
-                    className="w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
-                    placeholder="Confirm your password"
-                  />
-                </div>
-              </div>
-            )}
-
-            {isLogin && (
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <input
-                    id="remember-me"
-                    name="remember-me"
-                    type="checkbox"
-                    className="h-4 w-4 text-sky-600 focus:ring-sky-500 border-gray-300 rounded"
-                  />
-                  <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
-                    Remember me
-                  </label>
-                </div>
-                <Link to="/forgot-password" className="text-sm text-sky-600 hover:text-sky-500">
-                  Forgot password?
-                </Link>
-              </div>
-            )}
-
+            <div className="flex items-center justify-between text-xs mt-1 font-poppins">
+              <span className="text-gray-400">Forget password? <a href="#" className="text-[#197CAC] font-medium font-poppins underline">reset now</a></span>
+            </div>
+            <div className="flex items-center justify-between text-xs font-poppins">
+              <span className="text-gray-400">Do not have an account ? <Link to="/signup" className="text-[#197CAC] font-medium font-poppins underline">Sign up</Link></span>
+            </div>
+            {error && <div className="text-red-500 text-sm font-poppins mb-2">{error}</div>}
             <button
               type="submit"
-              className="w-full py-3 bg-sky-500 text-white font-semibold rounded-lg hover:bg-sky-600 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
+              className="w-full h-11 bg-[#197CAC] text-white rounded-md font-medium text-lg mt-2 hover:bg-[#156a99] transition-colors font-poppins"
             >
-              {isLogin ? 'Sign In' : 'Create Account'}
+              Sign in
             </button>
           </form>
-
-          {/* Divider */}
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Or continue with</span>
-              </div>
-            </div>
-
-            <div className="mt-6 grid grid-cols-2 gap-3">
-              <button className="w-full inline-flex justify-center py-3 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors">
-                <svg className="h-5 w-5" viewBox="0 0 24 24">
-                  <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                  <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                  <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                  <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                </svg>
-                <span className="ml-2">Google</span>
-              </button>
-
-              <button className="w-full inline-flex justify-center py-3 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors">
-                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                </svg>
-                <span className="ml-2">Facebook</span>
-              </button>
-            </div>
+          <div className="flex items-center my-6">
+            <div className="flex-grow border-t border-gray-200"></div>
+            <span className="mx-4 text-gray-400 text-sm font-poppins">Or log in with</span>
+            <div className="flex-grow border-t border-gray-200"></div>
           </div>
-
-          {/* Toggle */}
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              {isLogin ? "Don't have an account?" : 'Already have an account?'}
+          <div className="flex gap-4">
+            <button className="flex-1 flex items-center justify-center gap-2 border border-gray-200 rounded-md py-2 bg-white hover:bg-gray-50 transition-colors">
+              <GoogleIcon />
+              <span className="font-medium text-gray-700 font-poppins">Google</span>
+            </button>
+            <button className="flex-1 flex items-center justify-center gap-2 border border-gray-200 rounded-md py-2 bg-white hover:bg-gray-50 transition-colors">
+              <FacebookIcon />
+              <span className="font-medium text-gray-700 font-poppins">Facebook</span>
+            </button>
+          </div>
+        </div>
+        {/* Right: Image Slider with Swipe/Drag */}
+        <div className="hidden md:flex flex-1 items-center justify-center bg-white p-8">
+          <div className="flex flex-col items-center">
+            <div
+              className="w-[420px] h-[520px] rounded-3xl overflow-hidden shadow-lg bg-white relative select-none group"
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+              role="presentation"
+            >
+              <img
+                src={sliderImages[current]}
+                alt="Login Visual"
+                className="w-full h-full object-cover transition-all duration-500"
+                draggable={false}
+              />
+              {/* Left Arrow */}
               <button
-                onClick={() => setIsLogin(!isLogin)}
-                className="ml-1 font-medium text-sky-600 hover:text-sky-500"
+                className="absolute top-1/2 left-3 -translate-y-1/2 bg-white/80 hover:bg-white shadow p-2 rounded-full text-[#197CAC] opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                onClick={handlePrev}
+                aria-label="Previous image"
+                type="button"
               >
-                {isLogin ? 'Sign up' : 'Sign in'}
+                <ChevronLeft className="w-6 h-6" />
               </button>
-            </p>
+              {/* Right Arrow */}
+              <button
+                className="absolute top-1/2 right-3 -translate-y-1/2 bg-white/80 hover:bg-white shadow p-2 rounded-full text-[#197CAC] opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                onClick={handleNext}
+                aria-label="Next image"
+                type="button"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="flex items-center justify-center gap-2 py-4 w-[420px]">
+              {sliderImages.map((_, idx) => (
+                <button
+                  key={idx}
+                  className={`inline-block ${idx === current ? 'w-3 h-2 rounded-full bg-[#197CAC]' : 'w-2 h-2 rounded-full border border-[#197CAC] bg-white'} transition-all`}
+                  onClick={() => setCurrent(idx)}
+                  aria-label={`Go to slide ${idx + 1}`}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </div>
