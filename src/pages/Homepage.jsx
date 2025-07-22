@@ -272,7 +272,7 @@ const Homepage = () => {
           <section className="py-20 bg-white">
             <div className="max-w-7xl mx-auto px-4">
               <div className="text-center mb-16">
-                <div className="text-sky-500 font-poppins font-semibold text-lg mb-2 text-center">Top destinations</div>
+                <div className="text-[#3ABEFF] font-poppins font-semibold text-lg mb-2 text-center">Top destinations</div>
                 <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
                   Discover your destination
                 </h2>
