@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Plus, MapPin, Clock, GripVertical } from 'lucide-react';
 import { DeleteIcon, EditIcon, DateIcon, ChevronUpIcon, ChevronDownIcon } from './Icons';
 import { useAuth } from '../components/AuthContext';
+import CommentSection from './CommentSection';
 
 const activityTypes = [
   { id: 'attraction', name: 'Attraction', color: 'bg-blue-100 text-blue-800' },
@@ -39,7 +40,6 @@ function TripActivities({
 }) {
   const { user } = useAuth();
   const [openCommentsDayId, setOpenCommentsDayId] = useState(null);
-  const [newComment, setNewComment] = useState('');
   const [sending, setSending] = useState(false);
 
   const getActivityTypeStyle = (type) => {
@@ -57,8 +57,8 @@ function TripActivities({
     { border: '#00C48C', label: '#00C48C' }, // green
   ];
 
-  function handleAddComment(dayId) {
-    if (!newComment.trim()) return;
+  function handleAddComment(dayId, commentText, resetInput) {
+    if (!commentText.trim()) return;
     setSending(true);
     if (setTripInfo) {
       setTripInfo(prev => ({
@@ -72,7 +72,7 @@ function TripActivities({
                   {
                     id: Date.now(),
                     user: { name: user?.name || 'Anonymous', avatar: user?.avatar },
-                    message: newComment,
+                    message: commentText,
                   },
                 ],
               }
@@ -89,7 +89,7 @@ function TripActivities({
               {
                 id: Date.now(),
                 user: { name: user?.name || 'Anonymous', avatar: user?.avatar },
-                message: newComment,
+                message: commentText,
               },
             ],
           };
@@ -98,7 +98,7 @@ function TripActivities({
       });
       setDays(updatedDays);
     }
-    setNewComment('');
+    if (resetInput) resetInput('');
     setSending(false);
   }
 
@@ -223,77 +223,16 @@ function TripActivities({
               )}
               {/* Comments Panel */}
               {isCommentsOpen && (
-                <div className="p-0 mb-4">
-                  {/* Comments Header (replaces day header) */}
-                  <div className="flex items-center mb-6 px-6 pt-6">
-                    <button
-                      className="mr-3 text-2xl font-bold focus:outline-none"
-                      style={{ color: color.label }}
-                      onClick={() => setOpenCommentsDayId(null)}
-                    >
-                      &larr;
-                    </button>
-                    <span className="text-xl font-bold font-poppins mr-3" style={{ color: color.label }}>Comments</span>
-                    <DateIcon className="h-5 w-5 mr-2" style={{ color: color.label }} />
-                    <span className="text-base text-gray-500 font-poppins">21 jan 2025</span>
-                  </div>
-                  {/* Only display the latest comments for this day */}
-                  <div className="space-y-4 mb-6 px-6">
-                    {(day.comments || []).map(comment => (
-                      <div key={comment.id} className="bg-white rounded-xl p-4 flex items-start justify-between shadow border border-gray-100">
-                        <div className="flex items-start gap-3">
-                          <img src={comment.user.avatar || 'https://www.gravatar.com/avatar/?d=mp&f=y'} alt="avatar" className="w-10 h-10 rounded-full object-cover" />
-                          <div>
-                            <div className="font-semibold text-gray-600 font-poppins">{comment.user.name}</div>
-                            <div className="text-gray-400 font-poppins mt-1">{comment.message}</div>
-                          </div>
-                        </div>
-                        <button
-                          className="text-red-500 hover:text-red-700 ml-4"
-                          onClick={() => handleDeleteComment(day.id, comment.id)}
-                          aria-label="Delete comment"
-                        >
-                          <DeleteIcon className="h-5 w-5" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                  {/* Add Comment Input */}
-                  <div className="mt-4 px-6 pb-6">
-                    <div className="bg-white border border-gray-100 rounded-xl p-2 shadow flex flex-col gap-2">
-                      <div className="flex flex-row items-center gap-3">
-                        <img src={user?.avatar || 'https://www.gravatar.com/avatar/?d=mp&f=y'} alt="avatar" className="w-10 h-10 rounded-full object-cover" />
-                        <div className="font-normal text-gray-600 font-poppins text-base">{user?.name || 'Anonymous'}</div>
-                      </div>
-                      <div className="flex flex-row items-center gap-2">
-                        <textarea
-                          className="rounded-xl px-4 py-1 font-poppins text-gray-700 focus:outline-none bg-white flex-1 border-none resize-none"
-                          placeholder="Add a comment..."
-                          value={newComment}
-                          onChange={e => setNewComment(e.target.value)}
-                          onInput={e => {
-                            e.target.style.height = 'auto';
-                            e.target.style.height = e.target.scrollHeight + 'px';
-                          }}
-                          rows={1}
-                        />
-                        <button
-                          className="w-24 h-10 rounded-full border border-red-400 text-red-400 font-poppins font-medium hover:bg-red-50 transition flex items-center justify-center"
-                          onClick={() => { setOpenCommentsDayId(null); setNewComment(''); }}
-                        >
-                          cancel
-                        </button>
-                        <button
-                          className="w-24 h-10 rounded-full bg-[#3ABEFF] text-white font-poppins font-medium hover:bg-[#197CAC] transition flex items-center justify-center"
-                          onClick={() => handleAddComment(day.id)}
-                          disabled={sending || !newComment.trim()}
-                        >
-                          send
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <CommentSection
+                  comments={day.comments || []}
+                  user={user}
+                  color={color}
+                  dayId={day.id}
+                  onAddComment={handleAddComment}
+                  onDeleteComment={handleDeleteComment}
+                  onClose={() => setOpenCommentsDayId(null)}
+                  sending={sending}
+                />
               )}
               {/* Activities (only show if expanded) */}
               {!isCommentsOpen && expanded && (
