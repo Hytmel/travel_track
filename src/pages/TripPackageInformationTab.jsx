@@ -23,9 +23,6 @@ function TripPackageInformationTab({
   handleDestinationChange,
   handleDestinationKeyDown,
   handleDestinationBlur,
-  invitedFriends,
-  handleAddFriend,
-  handleRemoveFriend,
   user,
   weather
 }) {
@@ -35,7 +32,7 @@ function TripPackageInformationTab({
     setTripInfo({
       ...tripInfo,
       destinations: destinationsState,
-      travelMates: invitedFriends,
+      travelMates: tripInfo.travelMates,
       days: days,
       tripName,
       startDate,
@@ -46,6 +43,20 @@ function TripPackageInformationTab({
       destinationDescription,
       // add more fields as needed
     });
+  }
+
+  // Travel mates handlers (update context directly)
+  function handleAddFriend(friend) {
+    setTripInfo(prev => ({
+      ...prev,
+      travelMates: [...(prev.travelMates || []), friend],
+    }));
+  }
+  function handleRemoveFriend(friend) {
+    setTripInfo(prev => ({
+      ...prev,
+      travelMates: (prev.travelMates || []).filter(f => f !== friend),
+    }));
   }
 
   return (
@@ -115,7 +126,7 @@ function TripPackageInformationTab({
       />
       {/* Travel Mates Section */}
       <TravelMatesSection
-        invitedFriends={invitedFriends.length > 0 ? invitedFriends : (user && user.name ? [user.name] : [])}
+        invitedFriends={tripInfo.travelMates && tripInfo.travelMates.length > 0 ? tripInfo.travelMates : (user && user.name ? [user.name] : [])}
         handleAddFriend={handleAddFriend}
         handleRemoveFriend={handleRemoveFriend}
       />
