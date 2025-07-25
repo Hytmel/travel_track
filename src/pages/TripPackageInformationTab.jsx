@@ -28,29 +28,16 @@ function TripPackageInformationTab({
 }) {
   const { tripInfo, setTripInfo } = useSelectedDestination();
 
-  function handleBuildTrip() {
-    setTripInfo({
-      ...tripInfo,
-      destinations: destinationsState,
-      travelMates: tripInfo.travelMates,
-      days: days,
-      tripName,
-      startDate,
-      endDate,
-      destinationTitle: destinationName,
-      tripType,
-      destinationImage,
-      destinationDescription,
-      // add more fields as needed
-    });
-  }
+
 
   // Travel mates handlers (update context directly)
   function handleAddFriend(friend) {
-    setTripInfo(prev => ({
-      ...prev,
-      travelMates: [...(prev.travelMates || []), friend],
-    }));
+    if (friend && !tripInfo.travelMates?.includes(friend)) {
+      setTripInfo(prev => ({
+        ...prev,
+        travelMates: [...(prev.travelMates || []), friend],
+      }));
+    }
   }
   function handleRemoveFriend(friend) {
     setTripInfo(prev => ({
@@ -113,17 +100,17 @@ function TripPackageInformationTab({
           </div>
         </div>
       </div>
-      {/* Destinations Section */}
-      <DestinationsSection
-        destinations={destinationsState}
-        editingIdx={editingIdx}
-        setEditingIdx={setEditingIdx}
-        handleDestinationChange={handleDestinationChange}
-        handleDestinationKeyDown={handleDestinationKeyDown}
-        handleDestinationBlur={handleDestinationBlur}
-        ArrowBetweenDestinations={ArrowBetweenDestinations}
-        ArrowBetweenDestinationsB={ArrowBetweenDestinationsB}
-      />
+             {/* Destinations Section */}
+       <DestinationsSection
+         destinations={tripInfo.destinations || []}
+         editingIdx={editingIdx}
+         setEditingIdx={setEditingIdx}
+         handleDestinationChange={handleDestinationChange}
+         handleDestinationKeyDown={handleDestinationKeyDown}
+         handleDestinationBlur={handleDestinationBlur}
+         ArrowBetweenDestinations={ArrowBetweenDestinations}
+         ArrowBetweenDestinationsB={ArrowBetweenDestinationsB}
+       />
       {/* Travel Mates Section */}
       <TravelMatesSection
         invitedFriends={tripInfo.travelMates && tripInfo.travelMates.length > 0 ? tripInfo.travelMates : (user && user.name ? [user.name] : [])}
@@ -152,11 +139,7 @@ function TripPackageInformationTab({
           .scrollbar-none::-webkit-scrollbar { display: none; }
         `}</style>
       </div>
-      <div className="flex justify-end mt-8 font-poppins">
-        <button className="bg-[#72D1FF] text-white px-8 py-2 rounded-full font-medium text-[20px] hover:bg-[#3ABEFF] transition font-poppins" onClick={handleBuildTrip}>
-          Build trip
-        </button>
-      </div>
+
     </>
   );
 }

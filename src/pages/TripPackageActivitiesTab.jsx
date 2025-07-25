@@ -8,24 +8,21 @@ import PackageList from '../components/PackageList';
 function TripPackageActivitiesTab({
   destinationName,
   destinationCountry,
+  editingIdx,
+  setEditingIdx,
+  handleDestinationChange,
+  handleDestinationKeyDown,
+  handleDestinationBlur,
   // ...other props for TripActivities if needed
 }) {
   const { tripInfo, setTripInfo } = useSelectedDestination();
 
-  // Local state for destinations and days, initialized from context
-  const [destinationsState, setDestinationsState] = useState([]);
-  const [editingIdx, setEditingIdx] = useState(null);
-  // Remove local days state, use tripInfo.days
+  // Local state for days and activities
   const [expandedDays, setExpandedDays] = useState([]);
   const [showAddActivity, setShowAddActivity] = useState({ show: false, dayId: null });
   const [newActivity, setNewActivity] = useState({ name: '', time: '', type: 'attraction', location: '', notes: '' });
   const [editingActivity, setEditingActivity] = useState({ dayId: null, activityId: null });
   const [editActivityData, setEditActivityData] = useState({ name: '', time: '', type: 'attraction', location: '', notes: '' });
-
-  // Initialize local state from context on mount
-  useEffect(() => {
-    setDestinationsState(tripInfo.destinations || []);
-  }, [tripInfo]);
 
   // Patch: Ensure every day has a comments array (run only when tripInfo.days changes)
   useEffect(() => {
@@ -40,36 +37,9 @@ function TripPackageActivitiesTab({
     }
   }, [tripInfo.days]);
 
-  // Destinations handlers
-  function handleDestinationChange(index, value) {
-    const newDestinations = [...destinationsState];
-    newDestinations[index] = value;
-    setDestinationsState(newDestinations);
-  }
-  function handleDestinationKeyDown(e, index) {
-    if (e.key === "Enter") {
-      if (destinationsState[index].trim() && index === destinationsState.length - 1) {
-        setDestinationsState([...destinationsState, ""]);
-      }
-      setEditingIdx(null);
-    }
-  }
-  function handleDestinationBlur(index) {
-    if (destinationsState[index].trim() && index === destinationsState.length - 1) {
-      setDestinationsState([...destinationsState, ""]);
-    }
-    setEditingIdx(null);
-  }
 
-  // Build trip button handler
-  function handleBuildTrip() {
-    setTripInfo({
-      ...tripInfo,
-      destinations: destinationsState,
-      days: tripInfo.days, // Keep tripInfo.days as the source of truth
-      // add other fields as needed
-    });
-  }
+
+
 
   // Add Day
   function addDay() {
@@ -178,7 +148,7 @@ function TripPackageActivitiesTab({
   return (
     <>
       <DestinationsSection
-        destinations={destinationsState}
+        destinations={tripInfo.destinations || []}
         editingIdx={editingIdx}
         setEditingIdx={setEditingIdx}
         handleDestinationChange={handleDestinationChange}
@@ -212,11 +182,6 @@ function TripPackageActivitiesTab({
         toggleDay={toggleDay}
       />
       <PackageList />
-      <div className="flex justify-end mt-8 font-poppins">
-        <button className="bg-[#72D1FF] text-white px-8 py-2 rounded-full font-medium text-[20px] hover:bg-[#3ABEFF] transition font-poppins" onClick={handleBuildTrip}>
-          Build trip
-        </button>
-      </div>
     </>
   );
 }

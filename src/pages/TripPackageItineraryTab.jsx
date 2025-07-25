@@ -1,42 +1,56 @@
 import React, { useState } from 'react';
 import DestinationsSection from '../components/DestinationsSection';
+import WeatherCard from '../components/WeatherCard';
 import { useSelectedDestination } from '../components/SelectedDestinationContext';
 import { ArrowBetweenDestinations, ArrowBetweenDestinationsB } from '../components/Icons';
 
-function TripPackageItineraryTab() {
-  const { tripInfo, setTripInfo } = useSelectedDestination();
-  const [editingIdx, setEditingIdx] = useState(null);
-
-  // Handlers for editing destinations
-  const handleDestinationChange = (idx, value) => {
-    setTripInfo(prev => ({
-      ...prev,
-      destinations: prev.destinations.map((d, i) => (i === idx ? value : d)),
-    }));
-  };
-  const handleDestinationKeyDown = (e, idx) => {
-    if (e.key === 'Enter' || e.key === 'Tab') {
-      setEditingIdx(null);
-    }
-  };
-  const handleDestinationBlur = (idx) => {
-    setEditingIdx(null);
-  };
+function TripPackageItineraryTab({
+  editingIdx,
+  setEditingIdx,
+  handleDestinationChange,
+  handleDestinationKeyDown,
+  handleDestinationBlur,
+  weather
+}) {
+  const { tripInfo } = useSelectedDestination();
 
   return (
-    <div className="w-full">
-      <DestinationsSection
-        destinations={tripInfo.destinations || []}
-        editingIdx={editingIdx}
-        setEditingIdx={setEditingIdx}
-        handleDestinationChange={handleDestinationChange}
-        handleDestinationKeyDown={handleDestinationKeyDown}
-        handleDestinationBlur={handleDestinationBlur}
-        ArrowBetweenDestinations={ArrowBetweenDestinations}
-        ArrowBetweenDestinationsB={ArrowBetweenDestinationsB}
-      />
-      {/* Itinerary UI will go here next */}
+   <>
+    {/* Destinations Section */}
+    <DestinationsSection
+      destinations={tripInfo.destinations || []}
+      editingIdx={editingIdx}
+      setEditingIdx={setEditingIdx}
+      handleDestinationChange={handleDestinationChange}
+      handleDestinationKeyDown={handleDestinationKeyDown}
+      handleDestinationBlur={handleDestinationBlur}
+      ArrowBetweenDestinations={ArrowBetweenDestinations}
+      ArrowBetweenDestinationsB={ArrowBetweenDestinationsB}
+    />
+    
+    {/* Weather Section */}
+    <div className="mb-8 font-poppins">
+      <div className="text-[20px] font-semibold mb-4 font-poppins" style={{ color: '#197CAC' }}>Destination's weather</div>
+      <div className="flex flex-nowrap gap-4 font-poppins overflow-x-auto pb-2 scrollbar-none" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+        {weather.map((w, idx) => (
+          <WeatherCard
+            key={idx}
+            date={w.date}
+            icon={w.icon}
+            temp={w.temp}
+            high={w.high}
+            low={w.low}
+            wind={w.wind}
+            destinationName={tripInfo.destinationTitle || tripInfo.destinations?.[0] || 'Lake Como, Italy'}
+            destinationCountry={tripInfo.destinationCountry || ''}
+          />
+        ))}
+      </div>
+      <style>{`
+        .scrollbar-none::-webkit-scrollbar { display: none; }
+      `}</style>
     </div>
+   </>
   );
 }
 

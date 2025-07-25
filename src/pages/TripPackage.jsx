@@ -10,12 +10,13 @@ import TravelMatesSection from '../components/TravelMatesSection';
 import WeatherCard from '../components/WeatherCard';
 import TripPackageInformationTab from './TripPackageInformationTab';
 import TripPackageActivitiesTab from './TripPackageActivitiesTab';
+import TripPackageItineraryTab from './TripPackageItineraryTab';
 
 function TripPackage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { selectedDestination } = useSelectedDestination();
-  const { tripInfo } = useSelectedDestination();
+  const { tripInfo, setTripInfo } = useSelectedDestination();
   const destinations = location.state?.destinations || [];
   const { user } = useAuth();
   // Travel mates state and handlers
@@ -71,25 +72,36 @@ function TripPackage() {
   // Add descExpanded state for view more/less toggle
   const [descExpanded, setDescExpanded] = useState(false);
 
-  // Destinations editing state and handlers (copied from BuildTrip)
+  // Destinations editing state and handlers - update context immediately
   const [editingIdx, setEditingIdx] = useState(null);
-  const [destinationsState, setDestinationsState] = useState([...destinationsList]);
+  
   function handleDestinationChange(index, value) {
-    const newDestinations = [...destinationsState];
+    const newDestinations = [...(tripInfo.destinations || [])];
     newDestinations[index] = value;
-    setDestinationsState(newDestinations);
+    setTripInfo(prev => ({
+      ...prev,
+      destinations: newDestinations,
+    }));
   }
   function handleDestinationKeyDown(e, index) {
     if (e.key === "Enter") {
-      if (destinationsState[index].trim() && index === destinationsState.length - 1) {
-        setDestinationsState([...destinationsState, ""]);
+      const currentDestinations = tripInfo.destinations || [];
+      if (currentDestinations[index].trim() && index === currentDestinations.length - 1) {
+        setTripInfo(prev => ({
+          ...prev,
+          destinations: [...currentDestinations, ""],
+        }));
       }
       setEditingIdx(null);
     }
   }
   function handleDestinationBlur(index) {
-    if (destinationsState[index].trim() && index === destinationsState.length - 1) {
-      setDestinationsState([...destinationsState, ""]);
+    const currentDestinations = tripInfo.destinations || [];
+    if (currentDestinations[index].trim() && index === currentDestinations.length - 1) {
+      setTripInfo(prev => ({
+        ...prev,
+        destinations: [...currentDestinations, ""],
+      }));
     }
     setEditingIdx(null);
   }
@@ -116,42 +128,52 @@ function TripPackage() {
       date: '',
       activities: [],
     };
-    setDays([...days, newDay]);
+    setTripInfo(prev => ({
+      ...prev,
+      days: [...(prev.days || []), newDay],
+    }));
     setExpandedDays((prev) => [...prev, newDay.id]);
   };
   const addActivity = (dayId) => {
     if (!newActivity.name || !newActivity.time) return;
-    const updatedDays = days.map(day => {
-      if (day.id === dayId) {
-        return {
-          ...day,
-          activities: [
-            ...day.activities,
-            { id: Date.now(), ...newActivity, user: { name: 'Current User' } },
-          ],
-        };
-      }
-      return day;
-    });
-    setDays(updatedDays);
+    setTripInfo(prev => ({
+      ...prev,
+      days: (prev.days || []).map(day => {
+        if (day.id === dayId) {
+          return {
+            ...day,
+            activities: [
+              ...day.activities,
+              { id: Date.now(), ...newActivity, user: { name: 'Current User' } },
+            ],
+          };
+        }
+        return day;
+      }),
+    }));
     setNewActivity({ name: '', time: '', type: 'attraction', location: '', notes: '' });
     setShowAddActivity({ show: false, dayId: null });
   };
   const removeActivity = (dayId, activityId) => {
-    const updatedDays = days.map(day => {
-      if (day.id === dayId) {
-        return {
-          ...day,
-          activities: day.activities.filter(activity => activity.id !== activityId),
-        };
-      }
-      return day;
-    });
-    setDays(updatedDays);
+    setTripInfo(prev => ({
+      ...prev,
+      days: (prev.days || []).map(day => {
+        if (day.id === dayId) {
+          return {
+            ...day,
+            activities: day.activities.filter(activity => activity.id !== activityId),
+          };
+        }
+        return day;
+      }),
+    }));
   };
   const removeDay = (dayId) => {
-    if (days.length > 1) {
-      setDays(prevDays => prevDays.filter(day => day.id !== dayId));
+    if ((tripInfo.days || []).length > 1) {
+      setTripInfo(prev => ({
+        ...prev,
+        days: (prev.days || []).filter(day => day.id !== dayId),
+      }));
     }
   };
   const startEditActivity = (dayId, activity) => {
@@ -169,20 +191,39 @@ function TripPackage() {
     setEditActivityData({ name: '', time: '', type: 'attraction', location: '', notes: '' });
   };
   const saveEditActivity = () => {
-    setDays(days => days.map(day => {
-      if (day.id === editingActivity.dayId) {
-        return {
-          ...day,
-          activities: day.activities.map(activity =>
-            activity.id === editingActivity.activityId
-              ? { ...activity, ...editActivityData }
-              : activity
-          ),
-        };
-      }
-      return day;
+    setTripInfo(prev => ({
+      ...prev,
+      days: (prev.days || []).map(day => {
+        if (day.id === editingActivity.dayId) {
+          return {
+            ...day,
+            activities: day.activities.map(activity =>
+              activity.id === editingActivity.activityId
+                ? { ...activity, ...editActivityData }
+                : activity
+            ),
+          };
+        }
+        return day;
+      }),
     }));
     cancelEditActivity();
+  };
+
+  // Build trip button handler - saves all changes to context
+  const handleBuildTrip = () => {
+    setTripInfo(prev => ({
+      ...prev,
+      travelMates: invitedFriends,
+      // Keep other existing data
+      tripName: prev.tripName,
+      startDate: prev.startDate,
+      endDate: prev.endDate,
+      destinationTitle: prev.destinationTitle,
+      tripType: prev.tripType,
+      destinationImage: prev.destinationImage,
+      destinationDescription: prev.destinationDescription,
+    }));
   };
 
   return (
@@ -215,106 +256,71 @@ function TripPackage() {
 
       {/* Tab Content */}
       {/* All Information tab content below uses font-poppins */}
-      {activeTab === 'information' && (
-        <TripPackageInformationTab
-          destinationImage={destinationImage}
-          destinationName={destinationName}
-          destinationCountry={destinationCountry}
-          startDate={startDate}
-          endDate={endDate}
-          tripName={tripName}
-          tripType={tripType}
-          destinationDescription={destinationDescription}
-          descExpanded={descExpanded}
-          setDescExpanded={setDescExpanded}
-          days={days}
-          editingIdx={editingIdx}
-          setEditingIdx={setEditingIdx}
-          destinationsState={destinationsState}
-          handleDestinationChange={handleDestinationChange}
-          handleDestinationKeyDown={handleDestinationKeyDown}
-          handleDestinationBlur={handleDestinationBlur}
-          invitedFriends={travelMates}
-          handleAddFriend={handleAddFriend}
-          handleRemoveFriend={handleRemoveFriend}
-          user={user}
-          weather={weather}
-        />
-      )}
+              {activeTab === 'information' && (
+          <TripPackageInformationTab
+            destinationImage={destinationImage}
+            destinationName={destinationName}
+            destinationCountry={destinationCountry}
+            startDate={startDate}
+            endDate={endDate}
+            tripName={tripName}
+            tripType={tripType}
+            destinationDescription={destinationDescription}
+            descExpanded={descExpanded}
+            setDescExpanded={setDescExpanded}
+            days={days}
+            editingIdx={editingIdx}
+            setEditingIdx={setEditingIdx}
+            handleDestinationChange={handleDestinationChange}
+            handleDestinationKeyDown={handleDestinationKeyDown}
+            handleDestinationBlur={handleDestinationBlur}
+            user={user}
+            weather={weather}
+          />
+        )}
 
       {/* Activities & Package tab content */}
-      {activeTab === 'activities' && (
-        <TripPackageActivitiesTab
-          days={days}
-          showAddActivity={showAddActivity}
-          setShowAddActivity={setShowAddActivity}
-          newActivity={newActivity}
-          setNewActivity={setNewActivity}
-          editingActivity={editingActivity}
-          setEditingActivity={setEditingActivity}
-          editActivityData={editActivityData}
-          setEditActivityData={setEditActivityData}
-          startEditActivity={startEditActivity}
-          cancelEditActivity={cancelEditActivity}
-          saveEditActivity={saveEditActivity}
-          addActivity={addActivity}
-          removeActivity={removeActivity}
-          removeDay={removeDay}
-          addDay={addDay}
-          toggleDay={toggleDay}
-          expandedDays={expandedDays}
-          destinationName={destinationName}
-          destinationCountry={destinationCountry}
-        />
-      )}
+             {activeTab === 'activities' && (
+         <TripPackageActivitiesTab
+           days={days}
+           showAddActivity={showAddActivity}
+           setShowAddActivity={setShowAddActivity}
+           newActivity={newActivity}
+           setNewActivity={setNewActivity}
+           editingActivity={editingActivity}
+           setEditingActivity={setEditingActivity}
+           editActivityData={editActivityData}
+           setEditActivityData={setEditActivityData}
+           startEditActivity={startEditActivity}
+           cancelEditActivity={cancelEditActivity}
+           saveEditActivity={saveEditActivity}
+           addActivity={addActivity}
+           removeActivity={removeActivity}
+           removeDay={removeDay}
+           addDay={addDay}
+           toggleDay={toggleDay}
+           expandedDays={expandedDays}
+           destinationName={destinationName}
+           destinationCountry={destinationCountry}
+           editingIdx={editingIdx}
+           setEditingIdx={setEditingIdx}
+           handleDestinationChange={handleDestinationChange}
+           handleDestinationKeyDown={handleDestinationKeyDown}
+           handleDestinationBlur={handleDestinationBlur}
+         />
+       )}
 
-      {/* Itinerary tab content */}
-      {activeTab === 'itinerary' && (
-        <div className="font-poppins">
-          <h2 className="text-[20px] font-semibold mb-4" style={{ color: '#197CAC' }}>Itinerary</h2>
-          {days.map(day => (
-            <div key={day.id} className="mb-6 p-4 bg-gray-50 rounded-lg shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-[18px] font-bold" style={{ color: '#197CAC' }}>{day.label}</h3>
-                <button onClick={() => toggleDay(day.id)} className="text-gray-500 hover:text-gray-700">
-                  {expandedDays.includes(day.id) ? '▲' : '▼'}
-                </button>
-              </div>
-              {expandedDays.includes(day.id) && (
-                <>
-                  <p className="text-sm text-gray-600 mb-2">Date: {day.date}</p>
-                  <div className="grid gap-3">
-                    {day.activities.map(activity => (
-                      <div key={activity.id} className="bg-white p-3 rounded-lg shadow-sm">
-                        <p className="text-lg font-semibold" style={{ color: '#197CAC' }}>{activity.name}</p>
-                        <p className="text-sm text-gray-600">Time: {activity.time}</p>
-                        <p className="text-sm text-gray-600">Type: {activity.type}</p>
-                        <p className="text-sm text-gray-600">Location: {activity.location}</p>
-                        <p className="text-sm text-gray-600">Notes: {activity.notes}</p>
-                        <p className="text-sm text-gray-600">User: {activity.user.name}</p>
-                        <div className="flex items-center gap-1 mt-2">
-                          <button onClick={() => startEditActivity(day.id, activity)} className="text-blue-500 hover:text-blue-700">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" class="lucide lucide-pencil"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/><path d="M2 22l7.5-4.5 1.5-1.5-1.5-1.5L2 22z"/></svg>
-                          </button>
-                          <button onClick={() => removeActivity(day.id, activity.id)} className="text-red-500 hover:text-red-700">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6V4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <button onClick={() => addActivity(day.id)} className="mt-4 text-sm text-blue-500 hover:underline">
-                    Add Activity
-                  </button>
-                </>
-              )}
-            </div>
-          ))}
-          <button onClick={addDay} className="mt-4 text-sm text-blue-500 hover:underline">
-            Add Day
-          </button>
-        </div>
-      )}
+             {/* Itinerary tab content */}
+               {activeTab === 'itinerary' && (
+          <TripPackageItineraryTab
+            editingIdx={editingIdx}
+            setEditingIdx={setEditingIdx}
+            handleDestinationChange={handleDestinationChange}
+            handleDestinationKeyDown={handleDestinationKeyDown}
+            handleDestinationBlur={handleDestinationBlur}
+            weather={weather}
+          />
+        )}
 
       {/* Budget & Expenses tab content */}
       {activeTab === 'budget' && (
@@ -324,15 +330,25 @@ function TripPackage() {
         </div>
       )}
 
-      {/* Trip diary tab content */}
-      {activeTab === 'diary' && (
-        <div className="font-poppins">
-          <h2 className="text-[20px] font-semibold mb-4" style={{ color: '#197CAC' }}>Trip diary</h2>
-          <p>This section is under construction. Please check back later.</p>
-        </div>
-      )}
-    </div>
-  );
-}
+             {/* Trip diary tab content */}
+       {activeTab === 'diary' && (
+         <div className="font-poppins">
+           <h2 className="text-[20px] font-semibold mb-4" style={{ color: '#197CAC' }}>Trip diary</h2>
+           <p>This section is under construction. Please check back later.</p>
+         </div>
+       )}
+
+       {/* Build trip button - appears for all tabs */}
+       <div className="flex justify-end mt-8 font-poppins">
+         <button 
+           className="bg-[#72D1FF] text-white px-8 py-2 rounded-full font-medium text-[20px] hover:bg-[#3ABEFF] transition font-poppins" 
+           onClick={handleBuildTrip}
+         >
+           Build trip
+         </button>
+       </div>
+     </div>
+   );
+ }
 
 export default TripPackage;
