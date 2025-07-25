@@ -31,7 +31,7 @@ const ExploreCard = ({ destination }) => (
     <div className="flex items-center justify-between text-xs text-gray-500 px-5 pb-4 pt-2 font-poppins mt-auto">
       <div className="font-poppins">{destination.reviews.toLocaleString()} reviews</div>
       <Link
-        to={`/explore?destination=${encodeURIComponent(destination.name)}`}
+        to={`/destination/${destination.id}`}
         className="flex items-center space-x-1 text-black hover:text-gray-700 font-medium transition-colors text-[17px]"
       >
         <span>Explore</span>

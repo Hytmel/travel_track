@@ -140,7 +140,7 @@ const MyTrips = () => {
                       {trip.status.charAt(0).toUpperCase() + trip.status.slice(1)}
                     </span>
                   </div>
-                  <div className="absolute top-3 right-3 flex space-x-1">
+                  <div className="absolutef top-3 right-3 flex space-x-1">
                     <button className="p-2 bg-white/90 hover:bg-white rounded-lg transition-colors">
                       <Eye className="h-4 w-4 text-gray-700" />
                     </button>
