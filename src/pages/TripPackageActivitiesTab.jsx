@@ -3,6 +3,7 @@ import TripActivities from '../components/TripActivities';
 import DestinationsSection from '../components/DestinationsSection';
 import { useSelectedDestination } from '../components/SelectedDestinationContext';
 import { ArrowBetweenDestinations, ArrowBetweenDestinationsB } from '../components/Icons';
+import PackageList from '../components/PackageList';
 
 function TripPackageActivitiesTab({
   destinationName,
@@ -72,10 +73,11 @@ function TripPackageActivitiesTab({
 
   // Add Day
   function addDay() {
+    const newDayId = Date.now();
     setTripInfo(prev => {
       const nextNum = (prev.days?.length || 0) + 1;
       const newDay = {
-        id: Date.now(),
+        id: newDayId,
         label: `Day ${nextNum}`,
         date: '',
         activities: [],
@@ -86,7 +88,10 @@ function TripPackageActivitiesTab({
         days: [...(prev.days || []), newDay],
       };
     });
-    setExpandedDays((prev) => [...prev, Date.now()]); // Use Date.now() to match newDay.id
+    setExpandedDays((prev) => [...prev, newDayId]);
+    
+    // Automatically show add activity form for the new day
+    setShowAddActivity({ show: true, dayId: newDayId });
   }
   // Add Activity
   function addActivity(dayId) {
@@ -206,6 +211,7 @@ function TripPackageActivitiesTab({
         saveEditActivity={saveEditActivity}
         toggleDay={toggleDay}
       />
+      <PackageList />
       <div className="flex justify-end mt-8 font-poppins">
         <button className="bg-[#72D1FF] text-white px-8 py-2 rounded-full font-medium text-[20px] hover:bg-[#3ABEFF] transition font-poppins" onClick={handleBuildTrip}>
           Build trip

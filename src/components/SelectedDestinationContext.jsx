@@ -16,6 +16,7 @@ export function SelectedDestinationProvider({ children }) {
     destinationImage: '',
     destinationDescription: '',
     destinationTitle: '', // Added destination title
+    packageList: [], // Added package list for global management
     // add more fields as needed
   });
   return (

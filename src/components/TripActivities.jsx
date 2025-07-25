@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Plus, MapPin, Clock, GripVertical } from 'lucide-react';
 import { DeleteIcon, EditIcon, DateIcon, ChevronUpIcon, ChevronDownIcon } from './Icons';
 import { useAuth } from '../components/AuthContext';
@@ -41,6 +41,19 @@ function TripActivities({
   const { user } = useAuth();
   const [openCommentsDayId, setOpenCommentsDayId] = useState(null);
   const [sending, setSending] = useState(false);
+  const activityNameInputRefs = useRef({});
+
+  // Focus on activity name input when add activity form is shown
+  useEffect(() => {
+    if (showAddActivity.show && showAddActivity.dayId && activityNameInputRefs.current[showAddActivity.dayId]) {
+      // Small delay to ensure the form is rendered
+      setTimeout(() => {
+        if (activityNameInputRefs.current[showAddActivity.dayId]) {
+          activityNameInputRefs.current[showAddActivity.dayId].focus();
+        }
+      }, 50);
+    }
+  }, [showAddActivity.show, showAddActivity.dayId]);
 
   const getActivityTypeStyle = (type) => {
     const activityType = activityTypes.find(t => t.id === type);
@@ -49,9 +62,9 @@ function TripActivities({
 
   // Color palette for days (cycle through these)
   const dayColors = [
-    { border: '#197CAC', label: '#197CAC' }, // blue
-    { border: '#FFD600', label: '#FFD600' }, // yellow
     { border: '#7B61FF', label: '#7B61FF' }, // purple
+    { border: '#FFD600', label: '#FFD600' }, // yellow
+    { border: '#197CAC', label: '#197CAC' }, // blue
     { border: '#3ABEFF', label: '#3ABEFF' }, // cyan
     { border: '#FF7A00', label: '#FF7A00' }, // orange
     { border: '#00C48C', label: '#00C48C' }, // green
@@ -140,7 +153,8 @@ function TripActivities({
       <div className="flex items-center justify-between mb-2">
         <div className="text-[24px] font-semibold mb-6 font-poppins" style={{ color: '#197CAC' }}>Trip Activities</div>
         <button
-          className="flex items-center gap-2 border border-[#197CAC] text-[#197CAC] px-4 py-1 rounded-full font-normal text-sm bg-white hover:bg-[#f3f8fc] transition"
+          className="flex items-center gap-2 border px-4 py-1 rounded-full font-normal text-sm bg-white transition"
+          style={{ borderColor: '#197CAC', color: '#197CAC' }}
           onClick={addDay}
         >
           <Plus className="w-4 h-4" />
@@ -278,7 +292,7 @@ function TripActivities({
                                     type="text"
                                     value={editActivityData.name}
                                     onChange={e => setEditActivityData({ ...editActivityData, name: e.target.value })}
-                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 font-medium text-gray-900 text-base"
+                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 font-medium text-gray-900 text-base"
                                   />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4 mb-2">
@@ -288,7 +302,7 @@ function TripActivities({
                                       type="time"
                                       value={editActivityData.time}
                                       onChange={e => setEditActivityData({ ...editActivityData, time: e.target.value })}
-                                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
+                                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300"
                                     />
                                   </div>
                                   <div>
@@ -296,7 +310,7 @@ function TripActivities({
                                     <select
                                       value={editActivityData.type}
                                       onChange={e => setEditActivityData({ ...editActivityData, type: e.target.value })}
-                                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
+                                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300"
                                     >
                                       {activityTypes.map(type => (
                                         <option key={type.id} value={type.id}>{type.name}</option>
@@ -309,7 +323,7 @@ function TripActivities({
                                       type="text"
                                       value={editActivityData.location}
                                       onChange={e => setEditActivityData({ ...editActivityData, location: e.target.value })}
-                                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
+                                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300"
                                     />
                                   </div>
                                   <div className="col-span-2">
@@ -318,7 +332,7 @@ function TripActivities({
                                       value={editActivityData.notes}
                                       onChange={e => setEditActivityData({ ...editActivityData, notes: e.target.value })}
                                       rows={2}
-                                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
+                                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300"
                                     />
                                   </div>
                                 </div>
@@ -385,25 +399,26 @@ function TripActivities({
                       <div className="grid md:grid-cols-2 gap-4 mb-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Activity Name *
+                            Activity Name 
                           </label>
                           <input
+                            ref={el => activityNameInputRefs.current[day.id] = el}
                             type="text"
                             value={newActivity.name}
                             onChange={(e) => setNewActivity({ ...newActivity, name: e.target.value })}
-                            placeholder="Visit Eiffel Tower"
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
+                            placeholder="Activity Name"
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300"
                           />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Time *
+                            Time 
                           </label>
                           <input
                             type="time"
                             value={newActivity.time}
                             onChange={(e) => setNewActivity({ ...newActivity, time: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300"
                           />
                         </div>
                         <div>
@@ -413,7 +428,7 @@ function TripActivities({
                           <select
                             value={newActivity.type}
                             onChange={(e) => setNewActivity({ ...newActivity, type: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300"
                           >
                             {activityTypes.map(type => (
                               <option key={type.id} value={type.id}>{type.name}</option>
@@ -428,8 +443,8 @@ function TripActivities({
                             type="text"
                             value={newActivity.location}
                             onChange={(e) => setNewActivity({ ...newActivity, location: e.target.value })}
-                            placeholder="Champ de Mars, Paris"
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
+                            placeholder="Location"
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300"
                           />
                         </div>
                       </div>
@@ -442,7 +457,7 @@ function TripActivities({
                           onChange={(e) => setNewActivity({ ...newActivity, notes: e.target.value })}
                           placeholder="Any additional notes..."
                           rows={2}
-                          className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
+                          className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300"
                         />
                       </div>
                       <div className="flex items-center space-x-3">
