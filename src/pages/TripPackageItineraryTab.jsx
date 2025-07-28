@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import DestinationsSection from '../components/DestinationsSection';
 import WeatherCard from '../components/WeatherCard';
+import DestinationsMap from '../components/DestinationsMap';
 import { useSelectedDestination } from '../components/SelectedDestinationContext';
 import { ArrowBetweenDestinations, ArrowBetweenDestinationsB } from '../components/Icons';
 
@@ -49,6 +50,12 @@ function TripPackageItineraryTab({
       <style>{`
         .scrollbar-none::-webkit-scrollbar { display: none; }
       `}</style>
+    </div>
+    
+    {/* Trip Map Section */}
+    <div className="mb-8 font-poppins">
+      {console.log('TripPackageItineraryTab tripInfo:', tripInfo)}
+      <DestinationsMap destinations={tripInfo.destinations || []} />
     </div>
    </>
   );

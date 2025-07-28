@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import DestinationsSection from '../components/DestinationsSection';
 import TripActivities from '../components/TripActivities';
@@ -11,6 +11,9 @@ import WeatherCard from '../components/WeatherCard';
 import TripPackageInformationTab from './TripPackageInformationTab';
 import TripPackageActivitiesTab from './TripPackageActivitiesTab';
 import TripPackageItineraryTab from './TripPackageItineraryTab';
+import BudgetOverview from '../components/BudgetOverview';
+import BudgetExpensesTab from '../components/BudgetExpensesTab';
+import TripDiaryTab from '../components/TripDiaryTab';
 
 function TripPackage() {
   const location = useLocation();
@@ -18,6 +21,26 @@ function TripPackage() {
   const { selectedDestination } = useSelectedDestination();
   const { tripInfo, setTripInfo } = useSelectedDestination();
   const destinations = location.state?.destinations || [];
+  
+  // Update context with navigation state if it exists
+  useEffect(() => {
+    if (location.state?.destinations && location.state.destinations.length > 0) {
+      setTripInfo(prev => ({
+        ...prev,
+        destinations: location.state.destinations,
+      }));
+    }
+  }, [location.state?.destinations, setTripInfo]);
+
+  // Initialize with empty destinations for dynamic behavior
+  useEffect(() => {
+    if (!tripInfo.destinations || tripInfo.destinations.length === 0) {
+      setTripInfo(prev => ({
+        ...prev,
+        destinations: [''],
+      }));
+    }
+  }, [tripInfo.destinations, setTripInfo]);
   const { user } = useAuth();
   // Travel mates state and handlers
   const [invitedFriends, setInvitedFriends] = useState(location.state?.invitedFriends || []);
@@ -227,36 +250,37 @@ function TripPackage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-8 bg-white rounded-2xl shadow border border-gray-200 mt-24 mb-10 font-poppins">
-      {/* Header Section */}
-      <div className="flex items-center justify-between mb-8 font-poppins">
-        <div className="flex items-center gap-2">
-          <button onClick={() => navigate(-1)} className="flex items-center">
-            <ArrowLeft className="h-6 w-6 text-black" />
+    <div className="font-poppins">
+      <div className="max-w-6xl mx-auto p-8 bg-white rounded-2xl shadow border border-gray-200 mt-24 mb-10">
+        {/* Header Section */}
+        <div className="flex items-center justify-between mb-8 font-poppins">
+          <div className="flex items-center gap-2">
+            <button onClick={() => navigate(-1)} className="flex items-center">
+              <ArrowLeft className="h-6 w-6 text-black" />
+            </button>
+            <h1 className="text-2xl font-bold text-black">Build your trip</h1>
+          </div>
+          <button className="bg-[#E6F4FB] text-[#3ABEFF] px-6 py-2 rounded-full font-normal text-base hover:bg-[#d0eafd] transition flex items-center gap-2 border border-[#3ABEFF]">
+            Share trip
           </button>
-          <h1 className="text-2xl font-bold text-black">Build your trip</h1>
         </div>
-        <button className="bg-[#E6F4FB] text-[#3ABEFF] px-6 py-2 rounded-full font-normal text-base hover:bg-[#d0eafd] transition flex items-center gap-2 border border-[#3ABEFF]">
-          Share trip
-        </button>
-      </div>
-      {/* Tabs */}
-      <div className="flex items-center gap-12 mb-8 font-poppins">
-        {tabList.map(tab => (
-          <button
-            key={tab.key}
-            onClick={() => setActiveTab(tab.key)}
-            className={`text-[20px] font-medium transition-colors focus:outline-none pb-2 ${activeTab === tab.key ? 'text-[#197CAC] border-b-2 border-[#197CAC]' : 'text-[#A4A1A1] border-b-2 border-[#A4A1A1]'}`}
-            style={{ minWidth: 0 }}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+        {/* Tabs */}
+        <div className="flex items-center gap-12 mb-8 font-poppins">
+          {tabList.map(tab => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={`text-[20px] font-medium transition-colors focus:outline-none pb-2 ${activeTab === tab.key ? 'text-[#197CAC] border-b-2 border-[#197CAC]' : 'text-[#A4A1A1] border-b-2 border-[#A4A1A1]'}`}
+              style={{ minWidth: 0 }}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
 
-      {/* Tab Content */}
-      {/* All Information tab content below uses font-poppins */}
-              {activeTab === 'information' && (
+        {/* Tab Content */}
+        {/* All Information tab content below uses font-poppins */}
+        {activeTab === 'information' && (
           <TripPackageInformationTab
             destinationImage={destinationImage}
             destinationName={destinationName}
@@ -279,39 +303,39 @@ function TripPackage() {
           />
         )}
 
-      {/* Activities & Package tab content */}
-             {activeTab === 'activities' && (
-         <TripPackageActivitiesTab
-           days={days}
-           showAddActivity={showAddActivity}
-           setShowAddActivity={setShowAddActivity}
-           newActivity={newActivity}
-           setNewActivity={setNewActivity}
-           editingActivity={editingActivity}
-           setEditingActivity={setEditingActivity}
-           editActivityData={editActivityData}
-           setEditActivityData={setEditActivityData}
-           startEditActivity={startEditActivity}
-           cancelEditActivity={cancelEditActivity}
-           saveEditActivity={saveEditActivity}
-           addActivity={addActivity}
-           removeActivity={removeActivity}
-           removeDay={removeDay}
-           addDay={addDay}
-           toggleDay={toggleDay}
-           expandedDays={expandedDays}
-           destinationName={destinationName}
-           destinationCountry={destinationCountry}
-           editingIdx={editingIdx}
-           setEditingIdx={setEditingIdx}
-           handleDestinationChange={handleDestinationChange}
-           handleDestinationKeyDown={handleDestinationKeyDown}
-           handleDestinationBlur={handleDestinationBlur}
-         />
-       )}
+        {/* Activities & Package tab content */}
+        {activeTab === 'activities' && (
+          <TripPackageActivitiesTab
+            days={days}
+            showAddActivity={showAddActivity}
+            setShowAddActivity={setShowAddActivity}
+            newActivity={newActivity}
+            setNewActivity={setNewActivity}
+            editingActivity={editingActivity}
+            setEditingActivity={setEditingActivity}
+            editActivityData={editActivityData}
+            setEditActivityData={setEditActivityData}
+            startEditActivity={startEditActivity}
+            cancelEditActivity={cancelEditActivity}
+            saveEditActivity={saveEditActivity}
+            addActivity={addActivity}
+            removeActivity={removeActivity}
+            removeDay={removeDay}
+            addDay={addDay}
+            toggleDay={toggleDay}
+            expandedDays={expandedDays}
+            destinationName={destinationName}
+            destinationCountry={destinationCountry}
+            editingIdx={editingIdx}
+            setEditingIdx={setEditingIdx}
+            handleDestinationChange={handleDestinationChange}
+            handleDestinationKeyDown={handleDestinationKeyDown}
+            handleDestinationBlur={handleDestinationBlur}
+          />
+        )}
 
-             {/* Itinerary tab content */}
-               {activeTab === 'itinerary' && (
+        {/* Itinerary tab content */}
+        {activeTab === 'itinerary' && (
           <TripPackageItineraryTab
             editingIdx={editingIdx}
             setEditingIdx={setEditingIdx}
@@ -322,33 +346,31 @@ function TripPackage() {
           />
         )}
 
-      {/* Budget & Expenses tab content */}
-      {activeTab === 'budget' && (
-        <div className="font-poppins">
-          <h2 className="text-[20px] font-semibold mb-4" style={{ color: '#197CAC' }}>Budget & Expenses</h2>
-          <p>This section is under construction. Please check back later.</p>
+        {/* Budget & Expenses tab content */}
+        {activeTab === 'budget' && (
+          <div className="space-y-8">
+            <BudgetOverview />
+            <BudgetExpensesTab />
+          </div>
+        )}
+
+        {/* Trip diary tab content */}
+        {activeTab === 'diary' && (
+          <TripDiaryTab />
+        )}
+
+        {/* Build trip button - appears for all tabs */}
+        <div className="flex justify-end mt-8 font-poppins">
+          <button 
+            className="bg-[#72D1FF] text-white px-8 py-2 rounded-full font-medium text-[20px] hover:bg-[#3ABEFF] transition font-poppins" 
+            onClick={handleBuildTrip}
+          >
+            Build trip
+          </button>
         </div>
-      )}
-
-             {/* Trip diary tab content */}
-       {activeTab === 'diary' && (
-         <div className="font-poppins">
-           <h2 className="text-[20px] font-semibold mb-4" style={{ color: '#197CAC' }}>Trip diary</h2>
-           <p>This section is under construction. Please check back later.</p>
-         </div>
-       )}
-
-       {/* Build trip button - appears for all tabs */}
-       <div className="flex justify-end mt-8 font-poppins">
-         <button 
-           className="bg-[#72D1FF] text-white px-8 py-2 rounded-full font-medium text-[20px] hover:bg-[#3ABEFF] transition font-poppins" 
-           onClick={handleBuildTrip}
-         >
-           Build trip
-         </button>
-       </div>
-     </div>
-   );
- }
+      </div>
+    </div>
+  );
+}
 
 export default TripPackage;

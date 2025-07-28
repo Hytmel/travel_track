@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { EditIcon, DeleteIcon, ChevronDownIcon, ChevronUpIcon } from './Icons';
+import { EditIcon, DeleteIcon, ChevronDownIcon, ChevronUpIcon, PlusIcon } from './Icons';
 import { useSelectedDestination } from './SelectedDestinationContext';
 
 const defaultSections = [
@@ -156,7 +156,10 @@ function PackageList() {
         <div className="text-[24px] font-semibold mb-6 font-poppins" style={{ color: '#197CAC' }}>Package list</div>
         <div className="flex gap-2">
           <button className="px-4 py-1 rounded-full border border-[#197CAC] text-[#197CAC] bg-white hover:bg-[#e6f4fb] text-sm font-medium">generate with AI</button>
-          <button className="px-4 py-1 rounded-full border border-[#197CAC] text-[#197CAC] bg-white hover:bg-[#e6f4fb] text-sm font-medium" onClick={() => setShowAddSection(true)}>Add New Section</button>
+          <button className="flex items-center gap-2 px-4 py-1 rounded-full border border-[#197CAC] text-[#197CAC] bg-white hover:bg-[#e6f4fb] text-sm font-medium" onClick={() => setShowAddSection(true)}>
+            <PlusIcon className="w-3 h-3" />
+            Add New Section
+          </button>
         </div>
       </div>
       <div className="space-y-6 ">

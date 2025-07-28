@@ -6,6 +6,7 @@ import { ArrowLeft } from 'lucide-react';
 import { HotelsIcon, DishesIcon, FlightsIcon } from '../components/Icons.jsx';
 import AttractionCard from '../components/AttractionCard.jsx';
 import { useSelectedDestination } from '../components/SelectedDestinationContext.jsx';
+import { useAuth } from '../components/AuthContext.jsx';
 
 // Copy the destinations array from Explore.jsx (in a real app, this would be shared or fetched)
 const allDestinations = [
@@ -513,6 +514,7 @@ const DestinationDetails = () => {
   const destination = allDestinations.find(dest => String(dest.id) === String(id));
   const navigate = useNavigate();
   const { setSelectedDestination } = useSelectedDestination();
+  const { user } = useAuth();
 
   // Memoize attractions list to avoid recalculating on every render
   const attractionsList = useMemo(() => allDestinations.filter(dest => String(dest.id) !== String(id)), [id]);
@@ -537,6 +539,13 @@ const DestinationDetails = () => {
         <button
           className="bg-[#3ABEFF] text-white px-5 py-2 rounded-full font-normal text-base hover:bg-[#259fdc] transition flex items-center gap-2"
           onClick={() => {
+            if (!user) {
+              // If user is not logged in, redirect to login page
+              navigate('/login');
+              return;
+            }
+            
+            // If user is logged in, proceed with trip creation
             setSelectedDestination({
               id: destination.id,
               name: destination.name,

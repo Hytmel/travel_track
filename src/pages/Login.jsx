@@ -115,7 +115,7 @@ const Login = () => {
               </button>
             </div>
             <div className="flex items-center justify-between text-xs mt-1 font-poppins">
-              <span className="text-gray-400">Forget password? <a href="#" className="text-[#197CAC] font-medium font-poppins underline">reset now</a></span>
+              <span className="text-gray-400">Forget password? <Link to="/forgot-password" className="text-[#197CAC] font-medium font-poppins underline">reset now</Link></span>
             </div>
             <div className="flex items-center justify-between text-xs font-poppins">
               <span className="text-gray-400">Do not have an account ? <Link to="/signup" className="text-[#197CAC] font-medium font-poppins underline">Sign up</Link></span>
