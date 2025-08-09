@@ -38,14 +38,49 @@ const SignupStep2 = () => {
       return;
     }
     setError('');
-    // Combine info from both steps
-    login({
-      name: prevForm.firstName + ' ' + prevForm.lastName,
+    
+    // Convert month name to number (01-12)
+    const monthNumber = new Date(`${form.month} 1, 2000`).getMonth() + 1;
+    const formattedMonth = monthNumber.toString().padStart(2, '0');
+    const formattedDay = form.day.toString().padStart(2, '0');
+    
+    // Create the complete user object that matches what UserProfile expects
+    const userData = {
+      // Basic info
+      name: `${prevForm.firstName} ${prevForm.lastName}`,
       email: prevForm.email,
-      avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-      dob: `${form.year}-${form.month}-${form.day}`,
-      gender: form.gender,
-    });
+      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+      
+      // Profile info (matching UserProfile field names)
+      firstName: prevForm.firstName,
+      lastName: prevForm.lastName,
+      bio: '', // Empty for new users
+      dateOfBirth: `${form.year}-${formattedMonth}-${formattedDay}`, // Use correct field name
+      gender: form.gender.toLowerCase(), // Convert to lowercase for consistency
+      
+      // Initialize stats for new user
+      stats: {
+        totalTrips: 0,
+        completedTrips: 0,
+        totalDays: 0
+      },
+      
+      // Default preferences
+      preferences: {
+        budget: 'moderate',
+        travelStyle: 'balanced',
+        accommodationType: 'hotel'
+      },
+      
+      // Default notification settings
+      notifications: {
+        emailNotifications: true,
+        pushNotifications: true,
+        tripReminders: true
+      }
+    };
+    
+    login(userData);
     navigate('/');
   };
 
@@ -182,4 +217,4 @@ const SignupStep2 = () => {
   );
 };
 
-export default SignupStep2; 
+export default SignupStep2;

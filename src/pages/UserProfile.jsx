@@ -14,6 +14,7 @@ import {
   Settings,
   Bell,
   Star,
+  LogOut,
 } from "lucide-react";
 import { useAuth } from "../components/AuthContext.jsx";
 import Footer from "../components/Footer.jsx";
@@ -38,9 +39,35 @@ const UserProfile = () => {
     gender: user?.gender || "",
   });
 
+  const handleAvatarChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      // Check if file is an image
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file');
+        return;
+      }
+      
+      // Check file size (limit to 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image size should be less than 5MB');
+        return;
+      }
+      
+      // Convert to base64 and update immediately
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const newAvatar = e.target.result;
+        // Update user context immediately
+        updateProfile({ avatar: newAvatar });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center font-poppins">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
             Please log in to view your profile
@@ -55,6 +82,11 @@ const UserProfile = () => {
       </div>
     );
   }
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 font-poppins">
@@ -73,10 +105,7 @@ const UserProfile = () => {
               <h1 className="text-2xl font-bold text-gray-900">Profile</h1>
             </div>
             <button
-              onClick={() => {
-                logout();
-                navigate("/");
-              }}
+              onClick={handleLogout}
               className="text-red-600 hover:text-red-700 font-medium"
             >
               Logout
@@ -87,9 +116,9 @@ const UserProfile = () => {
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Profile Card */}
+          {/* Left Column - Profile Card (Dashboard) */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-sm p-6">
+            <div className="bg-white rounded-2xl shadow-sm p-6 h-fit">
               {/* Profile Header */}
               <div className="text-center mb-6">
                 <div className="relative inline-block">
@@ -100,9 +129,16 @@ const UserProfile = () => {
                     }`}
                     className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg"
                   />
-                  <button className="absolute bottom-0 right-0 bg-sky-500 text-white p-2 rounded-full hover:bg-sky-600">
+                  <label htmlFor="avatar-upload" className="absolute bottom-0 right-0 bg-sky-500 text-white p-2 rounded-full hover:bg-sky-600 cursor-pointer transition-colors">
                     <Camera className="h-4 w-4" />
-                  </button>
+                    <input
+                      id="avatar-upload"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarChange}
+                      className="hidden"
+                    />
+                  </label>
                 </div>
                 <div className="flex flex-row items-center gap-2 justify-center mt-4">
                   <h2 className="text-2xl font-bold text-gray-900">
@@ -119,6 +155,7 @@ const UserProfile = () => {
                   <Mail className="h-4 w-4" /> {user.email}
                 </p>
               </div>
+              
               {/* Quick Stats */}
               <div className="grid grid-cols-3 gap-4 mb-6">
                 <div className="text-center">
@@ -140,8 +177,9 @@ const UserProfile = () => {
                   <div className="text-sm text-gray-600">Days</div>
                 </div>
               </div>
+              
               {/* Navigation Tabs */}
-              <div className="space-y-2">
+              <div className="space-y-2 mb-6">
                 {[
                   {
                     id: "profile",
@@ -178,6 +216,15 @@ const UserProfile = () => {
                   </button>
                 ))}
               </div>
+
+              {/* Logout Button at Bottom */}
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors border border-red-200 hover:border-red-300"
+              >
+                <LogOut className="h-4 w-4" />
+                <span className="font-medium">Logout</span>
+              </button>
             </div>
           </div>
 
@@ -190,6 +237,7 @@ const UserProfile = () => {
                 {activeTab === "notifications" && "Notification Settings"}
                 {activeTab === "stats" && "Travel Statistics"}
               </h3>
+              
               {activeTab === "profile" && (
                 <div className="max-w-2xl mx-auto">
                   <div className="bg-gradient-to-r from-sky-100 to-sky-50 rounded-2xl shadow p-6 mb-8 flex flex-col items-center relative">
@@ -203,11 +251,23 @@ const UserProfile = () => {
                         </button>
                       )}
                     </div>
-                    <img
-                      src={user.avatar}
-                      alt="avatar"
-                      className="w-24 h-24 rounded-full border-4 border-white shadow-lg mb-4 object-cover"
-                    />
+                    <div className="relative inline-block mb-4">
+                      <img
+                        src={user.avatar}
+                        alt="avatar"
+                        className="w-24 h-24 rounded-full border-4 border-white shadow-lg object-cover"
+                      />
+                      <label htmlFor="avatar-upload-header" className="absolute bottom-0 right-0 bg-sky-500 text-white p-2 rounded-full hover:bg-sky-600 cursor-pointer transition-colors">
+                        <Camera className="h-4 w-4" />
+                        <input
+                          id="avatar-upload-header"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleAvatarChange}
+                          className="hidden"
+                        />
+                      </label>
+                    </div>
                     <div className="flex flex-row items-center gap-2 mb-1">
                       <h2 className="text-2xl font-bold text-gray-900">
                         {user.firstName || user.name || "-"}
@@ -225,6 +285,7 @@ const UserProfile = () => {
                       <Mail className="h-4 w-4" /> {user.email}
                     </p>
                   </div>
+                  
                   <div className="bg-white rounded-2xl shadow p-6">
                     {isEditing ? (
                       <form
@@ -237,13 +298,13 @@ const UserProfile = () => {
                       >
                         <div className="flex flex-row gap-6">
                           <div className="flex-1">
-                            <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
+                            <label className="block text-sm font-medium text-gray-700 flex items-center gap-2 mb-2">
                               <Edit className="h-4 w-4" />
                               First Name
                             </label>
                             <input
                               type="text"
-                              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring focus:ring-sky-200 focus:ring-opacity-50"
+                              className="w-full rounded-md border-gray-300 shadow-sm focus:border-gray-400 focus:ring-0 focus:outline-none px-3 py-2"
                               value={editForm.firstName}
                               onChange={(e) =>
                                 setEditForm((f) => ({
@@ -254,13 +315,13 @@ const UserProfile = () => {
                             />
                           </div>
                           <div className="flex-1">
-                            <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
+                            <label className="block text-sm font-medium text-gray-700 flex items-center gap-2 mb-2">
                               <Edit className="h-4 w-4" />
                               Last Name
                             </label>
                             <input
                               type="text"
-                              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring focus:ring-sky-200 focus:ring-opacity-50"
+                              className="w-full rounded-md border-gray-300 shadow-sm focus:border-gray-400 focus:ring-0 focus:outline-none px-3 py-2"
                               value={editForm.lastName}
                               onChange={(e) =>
                                 setEditForm((f) => ({
@@ -272,12 +333,12 @@ const UserProfile = () => {
                           </div>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
+                          <label className="block text-sm font-medium text-gray-700 flex items-center gap-2 mb-2">
                             <Edit className="h-4 w-4" />
                             Bio
                           </label>
                           <textarea
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring focus:ring-sky-200 focus:ring-opacity-50"
+                            className="w-full rounded-md border-gray-300 shadow-sm focus:border-gray-400 focus:ring-0 focus:outline-none px-3 py-2"
                             value={editForm.bio}
                             onChange={(e) =>
                               setEditForm((f) => ({
@@ -285,18 +346,18 @@ const UserProfile = () => {
                                 bio: e.target.value,
                               }))
                             }
-                            rows={2}
+                            rows={3}
                           />
                         </div>
                         <div className="flex flex-row gap-6">
                           <div className="flex-1">
-                            <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
+                            <label className="block text-sm font-medium text-gray-700 flex items-center gap-2 mb-2">
                               <Calendar className="h-4 w-4" />
                               Date of Birth
                             </label>
                             <input
                               type="date"
-                              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring focus:ring-sky-200 focus:ring-opacity-50"
+                              className="w-full rounded-md border-gray-300 shadow-sm focus:border-gray-400 focus:ring-0 focus:outline-none px-3 py-2"
                               value={editForm.dateOfBirth}
                               onChange={(e) =>
                                 setEditForm((f) => ({
@@ -307,12 +368,12 @@ const UserProfile = () => {
                             />
                           </div>
                           <div className="flex-1">
-                            <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
+                            <label className="block text-sm font-medium text-gray-700 flex items-center gap-2 mb-2">
                               <Edit className="h-4 w-4" />
                               Gender
                             </label>
                             <select
-                              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring focus:ring-sky-200 focus:ring-opacity-50"
+                              className="w-full rounded-md border-gray-300 shadow-sm focus:border-gray-400 focus:ring-0 focus:outline-none px-3 py-2"
                               value={editForm.gender}
                               onChange={(e) =>
                                 setEditForm((f) => ({
@@ -328,7 +389,7 @@ const UserProfile = () => {
                             </select>
                           </div>
                         </div>
-                        <div className="flex space-x-4 mt-4">
+                        <div className="flex space-x-4 mt-6">
                           <button
                             type="submit"
                             className="bg-sky-500 text-white px-6 py-2 rounded-lg hover:bg-sky-600 font-medium"
@@ -345,6 +406,7 @@ const UserProfile = () => {
                                 lastName: user?.lastName || "",
                                 bio: user?.bio || "",
                                 dateOfBirth: user?.dateOfBirth || "",
+                                gender: user?.gender || "",
                               });
                             }}
                           >
@@ -353,52 +415,54 @@ const UserProfile = () => {
                         </div>
                       </form>
                     ) : (
-                      <div className="space-y-6 divide-y divide-gray-100">
-                        <div className="flex flex-row gap-6 pb-6">
+                      <div className="space-y-6">
+                        <div className="flex flex-row gap-6">
                           <div className="flex-1">
-                            <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
+                            <label className="block text-sm font-medium text-gray-700 flex items-center gap-2 mb-2">
                               <Edit className="h-4 w-4" />
                               First Name
                             </label>
-                            <div className="mt-1 block w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-gray-900 text-lg font-semibold">
+                            <div className="text-gray-900 text-base font-normal">
                               {user.firstName || "-"}
                             </div>
                           </div>
                           <div className="flex-1">
-                            <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
+                            <label className="block text-sm font-medium text-gray-700 flex items-center gap-2 mb-2">
                               <Edit className="h-4 w-4" />
                               Last Name
                             </label>
-                            <div className="mt-1 block w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-gray-900 text-lg font-semibold">
+                            <div className="text-gray-900 text-base font-normal">
                               {user.lastName || "-"}
                             </div>
                           </div>
                         </div>
-                        <div className="py-6">
-                          <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
+                        
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 flex items-center gap-2 mb-2">
                             <Edit className="h-4 w-4" />
                             Bio
                           </label>
-                          <div className="mt-1 block w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-gray-900 text-lg font-semibold min-h-[48px]">
+                          <div className="text-gray-900 text-base font-normal min-h-[24px]">
                             {user.bio || "-"}
                           </div>
                         </div>
-                        <div className="flex flex-row gap-6 pt-0 pb-6">
+                        
+                        <div className="flex flex-row gap-6">
                           <div className="flex-1">
-                            <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
+                            <label className="block text-sm font-medium text-gray-700 flex items-center gap-2 mb-2">
                               <Calendar className="h-4 w-4" />
                               Date of Birth
                             </label>
-                            <div className="mt-1 block w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-gray-900 text-lg font-semibold min-h-[48px]">
+                            <div className="text-gray-900 text-base font-normal">
                               {user.dateOfBirth || "-"}
                             </div>
                           </div>
                           <div className="flex-1">
-                            <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
+                            <label className="block text-sm font-medium text-gray-700 flex items-center gap-2 mb-2">
                               <Edit className="h-4 w-4" />
                               Gender
                             </label>
-                            <div className="mt-1 block w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-gray-900 text-lg font-semibold min-h-[48px]">
+                            <div className="text-gray-900 text-base font-normal">
                               {user.gender || "-"}
                             </div>
                           </div>
@@ -408,11 +472,17 @@ const UserProfile = () => {
                   </div>
                 </div>
               )}
+              
               {/* Placeholder for other tabs */}
               {activeTab !== "profile" && (
-                <p className="text-gray-600">
-                  Content for {activeTab} tab will be implemented next.
-                </p>
+                <div className="text-center py-12">
+                  <p className="text-gray-600 text-lg mb-4">
+                    {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} settings
+                  </p>
+                  <p className="text-gray-500">
+                    Content for {activeTab} tab will be implemented next.
+                  </p>
+                </div>
               )}
             </div>
           </div>

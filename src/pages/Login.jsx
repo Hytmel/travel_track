@@ -64,27 +64,62 @@ const Login = () => {
     setCurrent((prev) => (prev - 1 + sliderImages.length) % sliderImages.length);
   };
 
+  const handleLogin = (e) => {
+    e.preventDefault();
+    if (!form.email || !form.password) {
+      setError('Please fill in both email and password.');
+      return;
+    }
+    setError('');
+    
+    // TODO: Replace this demo data with real authentication
+    // For now, creating a complete user object for demonstration
+    const userData = {
+      // Basic info
+      name: '______',
+      email: form.email,
+      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
+      
+      // Profile info (what UserProfile expects)
+      firstName: '_____',
+      lastName: '_____',
+      bio: '.......................',
+      dateOfBirth: '---',
+      gender: 'female',
+      
+      // User stats (sample data)
+      stats: {
+        totalTrips: 12,
+        completedTrips: 8,
+        totalDays: 87
+      },
+      
+      // Travel preferences
+      preferences: {
+        budget: 'moderate',
+        travelStyle: 'adventure',
+        accommodationType: 'hotel'
+      },
+      
+      // Notification settings
+      notifications: {
+        emailNotifications: true,
+        pushNotifications: true,
+        tripReminders: true
+      }
+    };
+    
+    login(userData);
+    navigate('/');
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-space-around bg-[#FCFCFC] font-poppins">
       <div className="w-full h-screen flex flex-col md:flex-row items-center justify-center bg-white pt-10 pl-12">
         {/* Left: Login Form */}
         <div className="flex-1 flex flex-col justify-center pl-20 pt-17 pb-10 ">
           <h2 className="font-poppins font-semibold text-[28px] text-[#197CAC] mb-8">Sign in to continue!</h2>
-          <form className="space-y-6" onSubmit={e => {
-            e.preventDefault();
-            if (!form.email || !form.password) {
-              setError('Please fill in both email and password.');
-              return;
-            }
-            setError('');
-            // Demo user info, replace with real data after backend integration
-            login({
-              name: 'Bouhafs Rim',
-              email: form.email,
-              avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-            });
-            navigate('/');
-          }}>
+          <form className="space-y-6" onSubmit={handleLogin}>
             <div>
               <input
                 id="email"
@@ -200,4 +235,4 @@ const Login = () => {
   );
 };
 
-export default Login; 
+export default Login;
