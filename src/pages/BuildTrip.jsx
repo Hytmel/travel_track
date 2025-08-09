@@ -10,7 +10,7 @@ import { useSelectedDestination } from '../components/SelectedDestinationContext
 
 const BuildTrip = () => {
   const location = useLocation();
-  const { selectedDestination, setTripInfo, tripInfo } = useSelectedDestination();
+  const { selectedDestination, setTripInfo, tripInfo, userTrips, setUserTrips } = useSelectedDestination();
   const destinationId = selectedDestination?.id || location.state?.destinationId;
   const [tripName, setTripName] = useState("");
   const [invitedFriends, setInvitedFriends] = useState([]);
@@ -358,6 +358,27 @@ const BuildTrip = () => {
               destinationDescription: selectedDestination?.description || '',
               // add more fields as needed
             });
+
+            // Create new trip and add to userTrips
+            const newTrip = {
+              id: Date.now(),
+              name: tripName,
+              destination: selectedDestination?.name || destinations.join(', '),
+              startDate,
+              endDate,
+              days: days.length,
+              collaborators: invitedFriends.length + 1,
+              collaboratorAvatars: invitedFriends.map((_, index) => 
+                `https://randomuser.me/api/portraits/${index % 2 === 0 ? 'women' : 'men'}/${index + 1}.jpg`
+              ).concat(['https://randomuser.me/api/portraits/men/1.jpg']),
+              image: selectedDestination?.image || 'https://images.pexels.com/photos/338515/pexels-photo-338515.jpeg',
+              status: 'planning',
+              activities: days.reduce((acc, day) => acc + (day.activities?.length || 0), 0),
+              description: selectedDestination?.description || 'A wonderful trip planned with TravelTrack!'
+            };
+            
+            setUserTrips([newTrip, ...userTrips]);
+
             navigate('/trip-package', {
               state: {
                 tripName,

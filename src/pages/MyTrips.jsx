@@ -1,46 +1,18 @@
 import React, { useState } from 'react';
 import { Calendar, MapPin, Users, Edit, Trash2, Plus, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { SearchIcon } from '../components/Icons.jsx';
+import TripCard from '../components/TripCard.jsx';
+import Footer from '../components/Footer.jsx';
+import { useSelectedDestination } from '../components/SelectedDestinationContext.jsx';
 
 const MyTrips = () => {
-  const [trips, setTrips] = useState([
-    {
-      id: 1,
-      name: 'European Adventure',
-      destination: 'Paris, Rome, Barcelona',
-      startDate: '2024-06-15',
-      endDate: '2024-06-25',
-      days: 10,
-      collaborators: 3,
-      image: 'https://images.pexels.com/photos/338515/pexels-photo-338515.jpeg',
-      status: 'planning',
-      activities: 24,
-    },
-    {
-      id: 2,
-      name: 'Tropical Getaway',
-      destination: 'Bali, Indonesia',
-      startDate: '2024-08-10',
-      endDate: '2024-08-18',
-      days: 8,
-      collaborators: 1,
-      image: 'https://images.pexels.com/photos/2166559/pexels-photo-2166559.jpeg',
-      status: 'booked',
-      activities: 18,
-    },
-    {
-      id: 3,
-      name: 'Mountain Retreat',
-      destination: 'Swiss Alps, Switzerland',
-      startDate: '2024-12-20',
-      endDate: '2024-12-28',
-      days: 8,
-      collaborators: 4,
-      image: 'https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg',
-      status: 'completed',
-      activities: 15,
-    },
-  ]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [ratingOrder, setRatingOrder] = useState(null);
+  const [reviewsActive, setReviewsActive] = useState(false);
+  const { userTrips, setUserTrips } = useSelectedDestination();
+  
+
 
   const getStatusStyle = (status) => {
     switch (status) {
@@ -56,7 +28,21 @@ const MyTrips = () => {
   };
 
   const deleteTrip = (tripId) => {
-    setTrips(trips.filter(trip => trip.id !== tripId));
+    setUserTrips(userTrips.filter(trip => trip.id !== tripId));
+  };
+
+  const addNewTrip = (tripData) => {
+    const newTrip = {
+      id: Date.now(),
+      ...tripData,
+      status: 'planning',
+      activities: tripData.days?.reduce((acc, day) => acc + (day.activities?.length || 0), 0) || 0,
+      collaborators: tripData.travelMates?.length || 1,
+      collaboratorAvatars: tripData.travelMates?.map((_, index) => 
+        `https://randomuser.me/api/portraits/${index % 2 === 0 ? 'women' : 'men'}/${index + 1}.jpg`
+      ) || ['https://randomuser.me/api/portraits/men/1.jpg']
+    };
+    setUserTrips([newTrip, ...userTrips]);
   };
 
   const formatDate = (dateString) => {
@@ -67,135 +53,141 @@ const MyTrips = () => {
     });
   };
 
+  // Find active trip (planning or booked status)
+  const activeTrip = userTrips.find(t => t.status === 'planning' || t.status === 'booked') || userTrips[0];
+
   return (
-    <div className="min-h-screen bg-gray-50 pt-8">
-      <div className="max-w-6xl mx-auto px-4">
+    <div className="min-h-screen bg-white font-poppins">
+      <div className="max-w-7xl mx-auto px-8 pt-32 font-poppins">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
-              My Trips
-            </h1>
-            <p className="text-xl text-gray-600">
-              Manage and view all your planned adventures.
-            </p>
+        
+        {/* Title */}
+        <div className="text-[#3ABEFF] font-poppins font-semibold text-lg mb-2">My Trips</div>
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 font-poppins">Manage your trips</h2>
+
+        {/* Search and Filters */}
+        <div className="pt-6 mb-8">
+          <div className="flex w-full gap-4 mb-8">
+            {/* Search Bar */}
+            <form className="flex-1 flex items-center bg-white border border-gray-200 rounded-full px-4 py-2" onSubmit={e => { e.preventDefault(); }}>
+              <SearchIcon className="text-sky-400 h-5 w-5 mr-2" />
+              <input
+                type="text"
+                placeholder="Search for trips ..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="flex-1 bg-transparent outline-none text-base font-poppins placeholder:text-gray-400"
+              />
+              <button type="submit" className="ml-2 px-5 py-1.5 bg-sky-400 text-white rounded-full font-poppins text-base font-normal hover:bg-sky-500 transition">Search</button>
+            </form>
+            {/* Right Icons */}
+            <button
+              className={`w-12 h-12 rounded-full flex items-center justify-center transition ${ratingOrder ? 'bg-[#197CAC]' : 'bg-sky-400'} hover:bg-sky-500`}
+              onClick={() => {
+                if (ratingOrder === null) setRatingOrder('desc');
+                else if (ratingOrder === 'desc') setRatingOrder('asc');
+                else setRatingOrder(null);
+              }}
+              title="Sort by rating"
+            >
+              <svg width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14.5833 1.66675V16.3334M14.5833 16.3334L10.9167 12.6667M14.5833 16.3334L18.25 12.6667M5.41667 16.3334V1.66675M5.41667 1.66675L1.75 5.33341M5.41667 1.66675L9.08333 5.33341" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+            <button
+              className={`w-12 h-12 rounded-full flex items-center justify-center transition ${reviewsActive ? 'bg-[#197CAC]' : 'bg-sky-400'} hover:bg-sky-500`}
+              onClick={() => setReviewsActive((prev) => !prev)}
+              title="Sort by reviews"
+            >
+              <svg width="20" height="14" viewBox="0 0 20 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4.5 7H15.5M1.75 1.5H18.25M7.25 12.5H12.75" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
           </div>
-          <Link
-            to="/itinerary"
-            className="inline-flex items-center space-x-2 px-6 py-3 bg-sky-500 text-white font-semibold rounded-lg hover:bg-sky-600 transition-colors"
-          >
-            <Plus className="h-5 w-5" />
-            <span>New Trip</span>
-          </Link>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-lg p-6 text-center">
-            <div className="text-3xl font-bold text-sky-600 mb-2">{trips.length}</div>
-            <div className="text-gray-600">Total Trips</div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+          <div className="bg-white rounded-xl shadow-md p-6 text-center border border-gray-200 transition-all duration-300 hover:shadow-xl hover:scale-105 cursor-pointer">
+            <div className="text-3xl font-bold text-sky-600 mb-2">{userTrips.length}</div>
+            <div className="text-sky-600 text-lg">Total Trips</div>
           </div>
-          <div className="bg-white rounded-xl shadow-lg p-6 text-center">
+          <div className="bg-white rounded-xl shadow-md p-6 text-center border border-gray-200 transition-all duration-300 hover:shadow-xl hover:scale-105 cursor-pointer">
             <div className="text-3xl font-bold text-green-600 mb-2">
-              {trips.filter(trip => trip.status === 'completed').length}
+              {userTrips.filter(trip => trip.status === 'completed').length}
             </div>
-            <div className="text-gray-600">Completed</div>
+            <div className="text-green-600 text-lg">Completed</div>
           </div>
-          <div className="bg-white rounded-xl shadow-lg p-6 text-center">
+          <div className="bg-white rounded-xl shadow-md p-6 text-center border border-gray-200 transition-all duration-300 hover:shadow-xl hover:scale-105 cursor-pointer">
             <div className="text-3xl font-bold text-orange-600 mb-2">
-              {trips.reduce((acc, trip) => acc + trip.days, 0)}
+              {userTrips.reduce((acc, trip) => acc + trip.days, 0)}
             </div>
-            <div className="text-gray-600">Total Days</div>
+            <div className="text-orange-600 text-lg">Total Days</div>
           </div>
         </div>
 
-        {/* Trips Grid */}
-        {trips.length === 0 ? (
-          <div className="text-center py-16 bg-white rounded-2xl shadow-lg">
-            <div className="mb-6">
-              <Calendar className="h-16 w-16 text-gray-300 mx-auto" />
-            </div>
-            <h3 className="text-2xl font-semibold text-gray-900 mb-2">No trips yet</h3>
-            <p className="text-gray-600 mb-6">Start planning your first adventure!</p>
-            <Link
-              to="/itinerary"
-              className="inline-flex items-center space-x-2 px-6 py-3 bg-sky-500 text-white font-semibold rounded-lg hover:bg-sky-600 transition-colors"
-            >
-              <Plus className="h-5 w-5" />
-              <span>Create Your First Trip</span>
-            </Link>
-          </div>
-        ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {trips.map((trip) => (
-              <div key={trip.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all hover:-translate-y-1 group">
-                <div className="relative h-48 overflow-hidden">
-                  <img
-                    src={trip.image}
-                    alt={trip.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute top-3 left-3">
-                    <span className={`px-3 py-1 text-xs font-medium rounded-full ${getStatusStyle(trip.status)}`}>
-                      {trip.status.charAt(0).toUpperCase() + trip.status.slice(1)}
-                    </span>
-                  </div>
-                  <div className="absolutef top-3 right-3 flex space-x-1">
-                    <button className="p-2 bg-white/90 hover:bg-white rounded-lg transition-colors">
-                      <Eye className="h-4 w-4 text-gray-700" />
-                    </button>
-                    <button className="p-2 bg-white/90 hover:bg-white rounded-lg transition-colors">
-                      <Edit className="h-4 w-4 text-gray-700" />
-                    </button>
-                    <button
-                      onClick={() => deleteTrip(trip.id)}
-                      className="p-2 bg-white/90 hover:bg-white rounded-lg transition-colors"
-                    >
-                      <Trash2 className="h-4 w-4 text-red-500" />
-                    </button>
-                  </div>
-                </div>
-                
-                <div className="p-6">
-                  <h3 className="font-semibold text-gray-900 text-lg mb-2">{trip.name}</h3>
-                  
-                  <div className="flex items-center text-gray-500 text-sm mb-3">
-                    <MapPin className="h-4 w-4 mr-1" />
-                    <span className="truncate">{trip.destination}</span>
-                  </div>
-                  
-                  <div className="flex items-center text-gray-500 text-sm mb-4">
-                    <Calendar className="h-4 w-4 mr-1" />
-                    <span>{formatDate(trip.startDate)} - {formatDate(trip.endDate)}</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                    <div className="flex items-center">
-                      <Users className="h-4 w-4 mr-1" />
-                      <span>{trip.collaborators} collaborator{trip.collaborators !== 1 ? 's' : ''}</span>
+        {/* Combined Trips Container */}
+        <div className="bg-white rounded-2xl border border-gray-300 shadow-sm p-8 pb-16 mb-12">
+          {/* Active Trip Section */}
+          {activeTrip && (
+            <>
+              <div className="flex items-center justify-between mb-8">
+                <h3 className="text-3xl font-bold text-black">Active trip</h3>
+              </div>
+              <div className="flex flex-col md:flex-row gap-16 mb-12">
+                <img 
+                  src={activeTrip.image} 
+                  alt={activeTrip.name} 
+                  className="w-full md:w-[400px] h-60 rounded-xl object-cover" 
+                />
+                <div className="flex-1 flex flex-col justify-between">
+                                     <div>
+                     <h4 className="font-semibold text-2xl mb-4" style={{ color: '#197CAC' }}>
+                       {activeTrip.destination}
+                     </h4>
+                    <div className="flex flex-col items-center">
+                      <div className="text-[14px] font-poppins font-medium mb-1 text-center" style={{ color: '#197CAC' }}>
+                        {formatDate(activeTrip.startDate)} - {formatDate(activeTrip.endDate)}
+                      </div>
+                      <div className="text-[14px] font-poppins font-medium mb-6 text-center" style={{ color: '#197CAC' }}>
+                        {activeTrip.activities} activities
+                      </div>
                     </div>
-                    <span>{trip.activities} activities</span>
+                    <p className="text-gray-600 text-base mb-2 line-clamp-3">
+                      {activeTrip.description}
+                    </p>
                   </div>
-                  
-                  <div className="flex space-x-2">
-                    <Link
-                      to={`/itinerary?trip=${trip.id}`}
-                      className="flex-1 py-2 bg-sky-500 text-white text-center font-medium rounded-lg hover:bg-sky-600 transition-colors"
-                    >
-                      View Details
-                    </Link>
-                    <button className="px-4 py-2 border border-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
-                      Share
-                    </button>
-                  </div>
+                  <Link 
+                    to={`/itinerary?trip=${activeTrip.id}`} 
+                    className="text-sm font-medium hover:underline flex items-center gap-1 mt-2" 
+                    style={{ color: '#197CAC' }}
+                  >
+                    more details <span style={{ color: '#197CAC' }}>&rarr;</span>
+                  </Link>
                 </div>
+              </div>
+            </>
+          )}
+
+          {/* Upcoming Trips Section */}
+          <div className="flex items-center justify-between mb-12">
+            <h3 className="text-3xl font-bold text-black">Upcoming Trips</h3>
+          </div>
+          <div className="flex flex-wrap gap-8 justify-center">
+            {userTrips.filter(trip => trip.id !== activeTrip?.id).slice(0, 3).map(trip => (
+              <div key={trip.id} className="flex justify-center">
+                <TripCard trip={trip} linkColor="black" />
               </div>
             ))}
           </div>
-        )}
+        </div>
+
+        {/* Add more sections here like trip list, etc. */}
       </div>
+
+      <Footer />
     </div>
   );
 };
 
-export default MyTrips; 
+export default MyTrips;

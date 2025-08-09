@@ -5,6 +5,7 @@ import { SearchIcon, ItineraryIcon, MapIcon, BudgetIcon, CollaborateIcon } from 
 import FeatureCard from '../components/FeatureCard.jsx';
 import MyTripsSection from '../components/MyTripsSection.jsx';
 import { useAuth } from '../components/AuthContext.jsx';
+import Footer from '../components/Footer.jsx';
 
 const Homepage = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -114,13 +115,13 @@ const Homepage = () => {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link
-                to="/itinerary"
+                to="/explore"
                 className="w-[224px] h-[40px] flex items-center justify-center bg-[#000000]/13 border border-black/13 backdrop-blur-sm text-white font-normal text-[18px] font-poppins rounded-[34px] hover:bg-[#FFFFFF]/30 transition-all duration-500 shadow-lg"
               >
                 Explore Destinations
               </Link>
               <Link
-                to="/explore"
+                to="/build-trip"
                 className="w-[224px] h-[40px] flex items-center justify-center bg-[#000000]/13 border border-black/13 backdrop-blur-sm text-white font-normal text-[18px] font-poppins rounded-[34px] hover:bg-[#3ABEFF]/40 transition-all duration-500 shadow-lg"
               >
                 Start planning your trip
@@ -331,30 +332,7 @@ const Homepage = () => {
         </>
       )}
 
-      {/* CTA Section */}
-      <section className="relative py-20 text-white">
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: 'url(/src/assets/images/footer.svg)'
-          }}
-        ></div>
-        <div className="absolute inset-0 backdrop-blur-sm"></div>
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <div className="relative">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-20">
-            Start your next adventure today.
-          </h2>
-          <Link
-            to="/itinerary"
-            className="inline-flex items-center justify-center w-[280px] h-[48px] bg-white text-[#197CAC] font-semibold rounded-full hover:bg-gray-50 transition duration-300 hover:scale-105 transform"
-          >
-            <span className="text-[#197CAC]">Start Planning Your Trip</span>
-            <ArrowRight className="h-5 w-5 text-[#197CAC]" />
-          </Link>
-          </div>
-        </div>
-      </section>
+      <Footer />
     </div>
   );
 };

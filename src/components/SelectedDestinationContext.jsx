@@ -116,7 +116,14 @@ export function SelectedDestinationProvider({ children }) {
     },
   ]);
   return (
-    <SelectedDestinationContext.Provider value={{ selectedDestination, setSelectedDestination, tripInfo, setTripInfo }}>
+    <SelectedDestinationContext.Provider value={{ 
+      selectedDestination, 
+      setSelectedDestination, 
+      tripInfo, 
+      setTripInfo,
+      userTrips,
+      setUserTrips
+    }}>
       {children}
     </SelectedDestinationContext.Provider>
   );
