@@ -94,7 +94,7 @@ export function SelectedDestinationProvider({ children }) {
       image: 'https://images.pexels.com/photos/248771/pexels-photo-248771.jpeg',
       status: 'planning',
       activities: 10,
-      description: 'Experience the magic of the Sahara with camel rides, starry nights, and Berber hospitality. Adventure and culture await in the world's largest desert.'
+      description: 'Experience the magic of the Sahara with camel rides, starry nights, and Berber hospitality. Adventure and culture await in the world\'s largest desert.'
     },
     {
       id: 5,
