@@ -27,6 +27,7 @@ import { AuthProvider } from "./components/AuthContext.jsx";
 import { SelectedDestinationProvider } from "./components/SelectedDestinationContext.jsx";
 import { FavoritesProvider } from "./components/FavoritesContext.jsx";
 import TripDiaryTab from "./components/TripDiaryTab.jsx";
+import UserProfile from "./pages/UserProfile.jsx";
 
 function AppContent() {
   const location = useLocation();
@@ -64,6 +65,7 @@ function AppContent() {
         />
         <Route path="/trip-package" element={<TripPackage />} />
         <Route path="/trip-diary" element={<TripDiaryTab />} />
+        <Route path="/profile" element={<UserProfile />} />
       </Routes>
     </div>
   );

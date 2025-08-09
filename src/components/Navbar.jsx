@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, User } from 'lucide-react';
-import { Logo, EnglishFlag, NotificationIcon } from './Icons.jsx';
-import { useAuth } from './AuthContext.jsx';
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { Menu, X, User } from "lucide-react";
+import { Logo, EnglishFlag, NotificationIcon } from "./Icons.jsx";
+import { useAuth } from "./AuthContext.jsx";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -12,9 +12,9 @@ const Navbar = () => {
   const isActive = (path) => location.pathname === path;
 
   const navLinks = [
-    { path: '/', label: 'Home' },
-    { path: '/explore', label: 'Explore' },
-    { path: '/my-trips', label: 'My Trips' },
+    { path: "/", label: "Home" },
+    { path: "/explore", label: "Explore" },
+    { path: "/my-trips", label: "My Trips" },
   ];
 
   return (
@@ -24,7 +24,9 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 group">
             <Logo />
-            <span className="text-xl font-normal text-[#3ABEFF] font-poppins">TravelTrack</span>
+            <span className="text-xl font-normal text-[#3ABEFF] font-poppins">
+              TravelTrack
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -35,8 +37,8 @@ const Navbar = () => {
                 to={link.path}
                 className={`px-3 py-2 rounded-md transition-colors font-poppins text-base ${
                   isActive(link.path)
-                    ? 'text-[#3ABEFF] bg-sky-50 font-bold'
-                    : 'text-[#3ABEFF] hover:text-[#3ABEFF] hover:bg-gray-50 font-normal'
+                    ? "text-[#3ABEFF] bg-sky-50 font-bold"
+                    : "text-[#3ABEFF] hover:text-[#3ABEFF] hover:bg-gray-50 font-normal"
                 }`}
               >
                 {link.label}
@@ -49,9 +51,21 @@ const Navbar = () => {
             {/* Language Selector */}
             <div className="flex items-center space-x-2 cursor-pointer">
               <EnglishFlag className="w-6 h-6" />
-              <span className="text-[#3ABEFF] font-normal text-base font-poppins">EN</span>
-              <svg className="w-4 h-4 text-[#3ABEFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <span className="text-[#3ABEFF] font-normal text-base font-poppins">
+                EN
+              </span>
+              <svg
+                className="w-4 h-4 text-[#3ABEFF]"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </div>
             {user ? (
@@ -59,13 +73,25 @@ const Navbar = () => {
                 {/* Notification Icon */}
                 <NotificationIcon className="cursor-pointer" />
                 {/* User Info */}
-                <div className="flex items-center space-x-2">
+                <Link
+                  to="/profile"
+                  className="flex items-center space-x-2 group"
+                  aria-label="Go to profile"
+                >
                   <div className="flex flex-col items-end ml-3 mr-3">
-                    <span className="text-[#3ABEFF] font-poppins font-medium text-lg leading-tight">{user.name}</span>
-                    <span className="text-gray-400 text-xs font-poppins">{user.email}</span>
+                    <span className="text-[#3ABEFF] font-poppins font-medium text-lg leading-tight group-hover:underline">
+                      {user.name}
+                    </span>
+                    <span className="text-gray-400 text-xs font-poppins group-hover:underline">
+                      {user.email}
+                    </span>
                   </div>
-                  <img src={user.avatar} alt="avatar" className="w-10 h-10 rounded-full object-cover border-2 border-[#3ABEFF]" />
-                </div>
+                  <img
+                    src={user.avatar}
+                    alt="avatar"
+                    className="w-10 h-10 rounded-full object-cover border-2 border-[#3ABEFF] cursor-pointer group-hover:shadow-md transition"
+                  />
+                </Link>
               </>
             ) : (
               <>
@@ -93,7 +119,11 @@ const Navbar = () => {
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="p-2 text-gray-700 hover:text-sky-600 hover:bg-gray-50 rounded-md transition-colors"
             >
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {isMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
             </button>
           </div>
         </div>
@@ -108,8 +138,8 @@ const Navbar = () => {
                   to={link.path}
                   className={`block px-3 py-2 rounded-md transition-colors font-poppins text-base ${
                     isActive(link.path)
-                      ? 'text-[#3ABEFF] bg-sky-50 font-bold'
-                      : 'text-[#3ABEFF] hover:text-[#3ABEFF] hover:bg-gray-50 font-normal'
+                      ? "text-[#3ABEFF] bg-sky-50 font-bold"
+                      : "text-[#3ABEFF] hover:text-[#3ABEFF] hover:bg-gray-50 font-normal"
                   }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -120,21 +150,45 @@ const Navbar = () => {
                 {/* Language Selector */}
                 <div className="flex items-center space-x-2 px-3 py-2 cursor-pointer">
                   <EnglishFlag className="w-6 h-6" />
-                  <span className="text-[#3ABEFF] font-normal text-base font-poppins">EN</span>
-                  <svg className="w-4 h-4 text-[#3ABEFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  <span className="text-[#3ABEFF] font-normal text-base font-poppins">
+                    EN
+                  </span>
+                  <svg
+                    className="w-4 h-4 text-[#3ABEFF]"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </div>
                 {user ? (
                   <>
                     <NotificationIcon className="w-7 h-7 my-2" />
-                    <div className="flex items-center space-x-2 bg-white rounded-full px-4 py-1 shadow-sm">
+                    <Link
+                      to="/profile"
+                      className="flex items-center space-x-2 bg-white rounded-full px-4 py-1 shadow-sm group"
+                      aria-label="Go to profile"
+                    >
                       <div className="flex flex-col items-end mr-2">
-                        <span className="text-[#3ABEFF] font-poppins font-medium text-lg leading-tight">{user.name}</span>
-                        <span className="text-gray-400 text-xs font-poppins">{user.email}</span>
+                        <span className="text-[#3ABEFF] font-poppins font-medium text-lg leading-tight group-hover:underline">
+                          {user.name}
+                        </span>
+                        <span className="text-gray-400 text-xs font-poppins group-hover:underline">
+                          {user.email}
+                        </span>
                       </div>
-                      <img src={user.avatar} alt="avatar" className="w-10 h-10 rounded-full object-cover border-2 border-[#3ABEFF]" />
-                    </div>
+                      <img
+                        src={user.avatar}
+                        alt="avatar"
+                        className="w-10 h-10 rounded-full object-cover border-2 border-[#3ABEFF] cursor-pointer group-hover:shadow-md transition"
+                      />
+                    </Link>
                   </>
                 ) : (
                   <>
@@ -163,4 +217,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar; 
+export default Navbar;
