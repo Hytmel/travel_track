@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Trash2 } from "lucide-react";
 
 const TripCard = ({ trip, linkColor = "#197CAC" }) => (
-  <div className="bg-white rounded-2xl shadow-md border border-gray-100 w-[340px] h-[370px] flex flex-col overflow-hidden font-poppins transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+  <div className="bg-white rounded-2xl shadow-md w-[340px] h-[370px] flex flex-col overflow-hidden font-poppins transition-all duration-300 hover:shadow-l hover:-translate-y-1">
     <div className="relative h-48 overflow-hidden group rounded-2xl">
       <img
         src={trip.image}

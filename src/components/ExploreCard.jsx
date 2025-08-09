@@ -7,7 +7,7 @@ const ExploreCard = ({ destination }) => {
   const { isFavorite, toggleFavorite } = useFavorites();
   const favorited = isFavorite(destination.id);
   return (
-    <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all hover:-translate-y-1 group font-poppins flex flex-col h-full">
+    <div className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1 group font-poppins flex flex-col h-full">
       <div className="relative h-48 overflow-hidden rounded-t-2xl">
         <img
           src={destination.image}

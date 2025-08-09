@@ -235,14 +235,11 @@ const MyTrips = () => {
             </>
           )}
 
-          {/* Completed Trips Section */}
-          {userTrips.filter((trip) => trip.status === "completed").length >
-            0 && (
+          {/* Other Trips Section */}
+          {userTrips.length > 1 && (
             <>
               <div className="flex items-center justify-between mb-12 mt-12">
-                <h3 className="text-3xl font-bold text-black">
-                  Completed Trips
-                </h3>
+                <h3 className="text-3xl font-bold text-black">Other Trips</h3>
               </div>
               <div
                 className="overflow-x-auto"
@@ -254,7 +251,7 @@ const MyTrips = () => {
                   .overflow-x-auto::-webkit-scrollbar { display: none; }
                 `}</style>
                   {userTrips
-                    .filter((trip) => trip.status === "completed")
+                    .filter((trip) => trip.id !== activeTrip?.id)
                     .map((trip) => (
                       <div
                         key={trip.id}
@@ -264,145 +261,6 @@ const MyTrips = () => {
                         <TripCard trip={trip} linkColor="black" />
                       </div>
                     ))}
-                  {/* Example extra completed trips for style preview (no delete icon) */}
-                  <div
-                    className="flex-shrink-0"
-                    style={{ minWidth: "320px", maxWidth: "340px" }}
-                  >
-                    <TripCard
-                      trip={{
-                        id: "demo1",
-                        name: "Tokyo Adventure",
-                        destination: "Tokyo, Japan",
-                        startDate: "2024-03-10",
-                        endDate: "2024-03-20",
-                        days: 10,
-                        collaborators: 2,
-                        collaboratorAvatars: [
-                          "https://randomuser.me/api/portraits/men/12.jpg",
-                          "https://randomuser.me/api/portraits/women/13.jpg",
-                        ],
-                        image:
-                          "https://images.pexels.com/photos/209074/pexels-photo-209074.jpeg",
-                        status: "completed",
-                        activities: 20,
-                        description:
-                          "Experience cherry blossoms, sushi, and the vibrant city life of Tokyo.",
-                      }}
-                      linkColor="black"
-                    />
-                  </div>
-                  <div
-                    className="flex-shrink-0"
-                    style={{ minWidth: "320px", maxWidth: "340px" }}
-                  >
-                    <TripCard
-                      trip={{
-                        id: "demo2",
-                        name: "Sydney Escape",
-                        destination: "Sydney, Australia",
-                        startDate: "2023-12-01",
-                        endDate: "2023-12-10",
-                        days: 9,
-                        collaborators: 3,
-                        collaboratorAvatars: [
-                          "https://randomuser.me/api/portraits/men/14.jpg",
-                          "https://randomuser.me/api/portraits/women/15.jpg",
-                          "https://randomuser.me/api/portraits/men/16.jpg",
-                        ],
-                        image:
-                          "https://images.pexels.com/photos/2193300/pexels-photo-2193300.jpeg",
-                        status: "completed",
-                        activities: 12,
-                        description:
-                          "Surf at Bondi Beach and explore the Sydney Opera House.",
-                      }}
-                      linkColor="black"
-                    />
-                  </div>
-                  <div
-                    className="flex-shrink-0"
-                    style={{ minWidth: "320px", maxWidth: "340px" }}
-                  >
-                    <TripCard
-                      trip={{
-                        id: "demo3",
-                        name: "Cairo Discovery",
-                        destination: "Cairo, Egypt",
-                        startDate: "2023-10-05",
-                        endDate: "2023-10-15",
-                        days: 10,
-                        collaborators: 2,
-                        collaboratorAvatars: [
-                          "https://randomuser.me/api/portraits/men/17.jpg",
-                          "https://randomuser.me/api/portraits/women/18.jpg",
-                        ],
-                        image:
-                          "https://images.pexels.com/photos/460672/pexels-photo-460672.jpeg",
-                        status: "completed",
-                        activities: 14,
-                        description:
-                          "Marvel at the pyramids and cruise the Nile in historic Cairo.",
-                      }}
-                      linkColor="black"
-                    />
-                  </div>
-                  <div
-                    className="flex-shrink-0"
-                    style={{ minWidth: "320px", maxWidth: "340px" }}
-                  >
-                    <TripCard
-                      trip={{
-                        id: "demo4",
-                        name: "Rio Carnival",
-                        destination: "Rio de Janeiro, Brazil",
-                        startDate: "2023-02-15",
-                        endDate: "2023-02-25",
-                        days: 10,
-                        collaborators: 4,
-                        collaboratorAvatars: [
-                          "https://randomuser.me/api/portraits/men/19.jpg",
-                          "https://randomuser.me/api/portraits/women/20.jpg",
-                          "https://randomuser.me/api/portraits/men/21.jpg",
-                          "https://randomuser.me/api/portraits/women/22.jpg",
-                        ],
-                        image:
-                          "https://images.pexels.com/photos/161956/brazil-rio-de-janeiro-carnival-costume-161956.jpeg",
-                        status: "completed",
-                        activities: 18,
-                        description:
-                          "Dance at the world-famous Carnival and relax on Copacabana Beach.",
-                      }}
-                      linkColor="black"
-                    />
-                  </div>
-                  <div
-                    className="flex-shrink-0"
-                    style={{ minWidth: "320px", maxWidth: "340px" }}
-                  >
-                    <TripCard
-                      trip={{
-                        id: "demo5",
-                        name: "Alaskan Expedition",
-                        destination: "Anchorage, Alaska",
-                        startDate: "2022-07-01",
-                        endDate: "2022-07-12",
-                        days: 11,
-                        collaborators: 2,
-                        collaboratorAvatars: [
-                          "https://randomuser.me/api/portraits/men/23.jpg",
-                          "https://randomuser.me/api/portraits/women/24.jpg",
-                        ],
-                        image:
-                          "https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg",
-                        status: "completed",
-                        activities: 16,
-                        description:
-                          "See glaciers, wildlife, and the northern lights in Alaska.",
-                      }}
-                      linkColor="black"
-                    />
-                  </div>
                 </div>
               </div>
             </>
