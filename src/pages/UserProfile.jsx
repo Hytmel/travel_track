@@ -21,6 +21,7 @@ import Footer from "../components/Footer.jsx";
 import ProfileTab from "../components/ProfileTab.jsx";
 import PreferencesTab from "../components/PreferencesTab.jsx";
 import TravelStatsTab from "../components/TravelStatsTab.jsx";
+import NotificationsTab from "../components/NotificationsTab.jsx";
 
 const UserProfile = () => {
   const {
@@ -157,10 +158,10 @@ const UserProfile = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
           {/* Left Column - Profile Card (Dashboard) */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-sm p-6 h-fit">
+            <div className="bg-white rounded-2xl shadow-sm p-6 h-full flex flex-col">
               {/* Profile Header */}
               <div className="text-center mb-6">
                 <div className="relative inline-block">
@@ -262,7 +263,7 @@ const UserProfile = () => {
               {/* Logout Button at Bottom */}
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors border border-red-200 hover:border-red-300"
+                className="mt-auto w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors border border-red-200 hover:border-red-300"
               >
                 <LogOut className="h-4 w-4" />
                 <span className="font-medium">Logout</span>
@@ -272,7 +273,7 @@ const UserProfile = () => {
 
           {/* Right Column - Content */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-2xl shadow-sm p-6">
+            <div className="bg-white rounded-2xl shadow-sm p-6 h-full">
               <h3 className="text-xl font-bold text-gray-900 mb-6">
                 {activeTab === "profile" && "Profile Information"}
                 {activeTab === "preferences" && "Travel Preferences"}
@@ -305,16 +306,8 @@ const UserProfile = () => {
                 <TravelStatsTab user={user} />
               )}
               
-              {/* Placeholder for unimplemented tabs */}
               {activeTab === "notifications" && (
-                <div className="text-center py-12">
-                  <p className="text-gray-600 text-lg mb-4">
-                    {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} settings
-                  </p>
-                  <p className="text-gray-500">
-                    Content for {activeTab} tab will be implemented next.
-                  </p>
-                </div>
+                <NotificationsTab />
               )}
               
             </div>
