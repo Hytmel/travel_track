@@ -9,6 +9,11 @@ function readLS() {
 }
 function writeLS(list) {
   localStorage.setItem(LS_KEY, JSON.stringify(list));
+  try {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("tt_notifications_updated"));
+    }
+  } catch {}
 }
 
 export async function getNotifications({ status = "all", limit = 50 } = {}) {

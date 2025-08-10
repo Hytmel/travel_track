@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   ArrowLeft,
   Edit,
@@ -32,9 +32,13 @@ const UserProfile = () => {
     logout,
   } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isEditing, setIsEditing] = useState(false);
 
-  const [activeTab, setActiveTab] = useState("profile");
+  const [activeTab, setActiveTab] = useState(() => {
+    const q = new URLSearchParams(location.search).get("tab");
+    return q || "profile";
+  });
   const [editForm, setEditForm] = useState({
     firstName: user?.firstName || "",
     lastName: user?.lastName || "",
@@ -130,6 +134,23 @@ const UserProfile = () => {
     logout();
     navigate("/");
   };
+
+  // Keep URL ?tab= in sync with state
+  useEffect(() => {
+    const sp = new URLSearchParams(location.search);
+    if (activeTab) {
+      sp.set("tab", activeTab);
+      navigate({ search: sp.toString() }, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab]);
+
+  // Respond to back/forward changes in ?tab=
+  useEffect(() => {
+    const q = new URLSearchParams(location.search).get("tab");
+    if (q && q !== activeTab) setActiveTab(q);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.search]);
 
   return (
     <div className="min-h-screen bg-gray-50 font-poppins">
@@ -277,7 +298,7 @@ const UserProfile = () => {
               <h3 className="text-xl font-bold text-gray-900 mb-6">
                 {activeTab === "profile" && "Profile Information"}
                 {activeTab === "preferences" && "Travel Preferences"}
-                {activeTab === "notifications" && "Notification Settings"}
+                {activeTab === "notifications" && "Notifications"}
                 {activeTab === "stats" && "Travel Statistics"}
               </h3>
               

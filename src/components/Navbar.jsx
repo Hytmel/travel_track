@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, User } from "lucide-react";
 import { Logo, EnglishFlag, NotificationIcon } from "./Icons.jsx";
 import { useAuth } from "./AuthContext.jsx";
+import { getNotifications, seedIfEmpty } from "../services/notifications.mock";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const { user, logout } = useAuth();
+  const [unread, setUnread] = useState(0);
 
   const isActive = (path) => location.pathname === path;
 
@@ -16,6 +18,34 @@ const Navbar = () => {
     { path: "/explore", label: "Explore" },
     { path: "/my-trips", label: "My Trips" },
   ];
+
+  // Load unread notifications count (mocked)
+  useEffect(() => {
+    let timer;
+    const load = async () => {
+      try {
+        await seedIfEmpty();
+        const list = await getNotifications({ status: "unread", limit: 999 });
+        setUnread(list.length);
+      } catch {}
+    };
+    load();
+    const onVis = () => document.visibilityState === "visible" && load();
+    const onStorage = (e) => {
+      if (e.key === "tt_notifications_v1") load();
+    };
+    const onCustom = () => load();
+    document.addEventListener("visibilitychange", onVis);
+    window.addEventListener("storage", onStorage);
+    window.addEventListener("tt_notifications_updated", onCustom);
+    timer = setInterval(load, 30000);
+    return () => {
+      document.removeEventListener("visibilitychange", onVis);
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener("tt_notifications_updated", onCustom);
+      clearInterval(timer);
+    };
+  }, []);
 
   return (
     <nav className="bg-white/95 backdrop-blur-md shadow-lg absolute top-4 z-50 left-4 right-4 rounded-[46px] border border-gray-200">
@@ -70,8 +100,15 @@ const Navbar = () => {
             </div>
             {user ? (
               <>
-                {/* Notification Icon */}
-                <NotificationIcon className="cursor-pointer" />
+                {/* Notification Icon with badge */}
+                <Link to="/profile?tab=notifications" className="relative" aria-label="Notifications">
+                  <NotificationIcon className="cursor-pointer" />
+                  {unread > 0 && (
+                    <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[10px] leading-[18px] text-center font-semibold">
+                      {unread > 9 ? "9+" : unread}
+                    </span>
+                  )}
+                </Link>
                 {/* User Info */}
                 <Link
                   to="/profile"
@@ -169,7 +206,14 @@ const Navbar = () => {
                 </div>
                 {user ? (
                   <>
-                    <NotificationIcon className="w-7 h-7 my-2" />
+                    <Link to="/profile?tab=notifications" className="relative w-7 h-7 my-2 inline-block" aria-label="Notifications">
+                      <NotificationIcon className="w-7 h-7" />
+                      {unread > 0 && (
+                        <span className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 rounded-full bg-rose-500 text-white text-[10px] leading-[16px] text-center font-semibold">
+                          {unread > 9 ? "9+" : unread}
+                        </span>
+                      )}
+                    </Link>
                     <Link
                       to="/profile"
                       className="flex items-center space-x-2 bg-white rounded-full px-4 py-1 shadow-sm group"
