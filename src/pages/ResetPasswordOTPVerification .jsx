@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import AuthButton from '../components/AuthButton.jsx';
-import { apiService } from '../api/api.js';
+import { apiService } from '../api/api';
 
-const OTPVerification = () => {
+const ResetPasswordOTPVerification = () => {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -11,23 +11,21 @@ const OTPVerification = () => {
   const [isResent, setIsResent] = useState(false);
   const [countdown, setCountdown] = useState(60);
   const [isCountingDown, setIsCountingDown] = useState(false);
-  const [fromForgotPassword, setFromForgotPassword] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const inputRefs = useRef([]);
 
-  // Get email and source from navigation state
+  // Get email from navigation state
   useEffect(() => {
     const emailFromState = location.state?.email;
-    const isForgotPassword = location.state?.fromForgotPassword;
     
     if (emailFromState) {
       setEmail(emailFromState);
+    } else {
+      // If no email in state, redirect back to forgot password
+      navigate('/forgot-password');
     }
-    if (isForgotPassword) {
-      setFromForgotPassword(true);
-    }
-  }, [location.state]);
+  }, [location.state, navigate]);
 
   useEffect(() => {
     if (isCountingDown && countdown > 0) {
@@ -87,13 +85,7 @@ const OTPVerification = () => {
     setError('');
 
     try {
-      if (fromForgotPassword) {
-        // Resend forgot password code
-        await apiService.forgotPassword(email);
-      } else {
-        // Resend email verification code
-        await apiService.resendVerificationCode({ email });
-      }
+      await apiService.forgotPassword(email);
       
       setIsResent(true);
       setIsCountingDown(true);
@@ -125,30 +117,31 @@ const OTPVerification = () => {
     setError('');
 
     try {
-      // Use the same verify-email endpoint for both flows
-      const response = await apiService.verifyEmail({
+      // Verify the reset code with your backend
+      const response = await apiService.verifyResetCode({
         email: email,
         code: otpString
       });
       
-      if (response.success) {
-        if (fromForgotPassword) {
-          // Navigate to email confirmed page for forgot password flow
-          navigate('/email-confirmed', {
-            state: { 
-              email: email,
-              resetToken: response.resetToken // If your API provides a reset token
-            }
-          });
-        } else {
-          // Navigate to login with success message for regular email verification
-          navigate('/login', {
-            state: {
-              message: 'Email verified successfully! You can now log in to your account.',
-              email: email
-            }
-          });
-        }
+      console.log('Full API response:', response);
+      
+      if (response.success && response.resetToken) {
+        console.log('Reset code verified, token received:', response.resetToken);
+        console.log('Navigating to:', `/reset-password?token=${response.resetToken}`);
+        
+        // Try both navigation methods
+        const resetUrl = `/reset-password?token=${response.resetToken}`;
+        
+        // Method 1: React Router navigate
+        navigate(resetUrl);
+        
+        // Method 2: As backup, use window.location (uncomment if navigate doesn't work)
+        // window.location.href = resetUrl;
+        
+      } else {
+        console.log('Response success:', response.success);
+        console.log('Reset token:', response.resetToken);
+        setError('Verification successful but no reset token received. Please try again.');
       }
     } catch (error) {
       console.error('Verification error:', error);
@@ -166,11 +159,7 @@ const OTPVerification = () => {
   };
 
   const handleBack = () => {
-    if (fromForgotPassword) {
-      navigate('/forgot-password');
-    } else {
-      navigate('/signup');
-    }
+    navigate('/forgot-password');
   };
 
   return (
@@ -193,13 +182,13 @@ const OTPVerification = () => {
               </svg>
             </button>
             <h2 className="font-poppins font-semibold text-[27px] text-[#197CAC]">
-              Code verification
+              Password Reset Code
             </h2>
           </div>
           
           {/* Instructions */}
           <p className="text-gray-400 text-[16px] mb-8 font-poppins font-normal">
-            Enter the code sent to {email || 'your email address'}
+            Enter the password reset code sent to {email || 'your email address'}
           </p>
           
           {/* OTP Input Fields */}
@@ -228,7 +217,7 @@ const OTPVerification = () => {
             </div>
             
             {error && (
-              <div className="text-red-500 text-sm font-poppins text-center">
+              <div className="text-red-500 text-sm font-poppins text-center bg-red-50 p-3 rounded-lg">
                 {error}
               </div>
             )}
@@ -237,7 +226,7 @@ const OTPVerification = () => {
             <div className="space-y-2">
               {isResent && (
                 <div className="text-[#3ABEFF] text-sm font-medium">
-                  Code Resent!
+                  Reset Code Resent!
                 </div>
               )}
               
@@ -252,18 +241,18 @@ const OTPVerification = () => {
                   disabled={loading}
                   className="text-[#3ABEFF] text-sm font-medium hover:text-[#2ba8e6] transition-colors disabled:opacity-50"
                 >
-                  Resend code
+                  Resend reset code
                 </button>
               )}
             </div>
             
-            {/* Confirm Button */}
+            {/* Verify Button */}
             <AuthButton 
               type="submit" 
               className="bg-[#3ABEFF] text-white hover:bg-[#2ba8e6] w-full"
               disabled={loading}
             >
-              {loading ? 'Verifying...' : 'Confirm'}
+              {loading ? 'Verifying...' : 'Verify Code'}
             </AuthButton>
           </form>
         </div>
@@ -272,4 +261,4 @@ const OTPVerification = () => {
   );
 };
 
-export default OTPVerification;
+export default ResetPasswordOTPVerification;

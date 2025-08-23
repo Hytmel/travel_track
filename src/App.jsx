@@ -14,8 +14,9 @@ import Login from "./pages/Login.jsx";
 import Signup from "./pages/Signup.jsx";
 import SignupStep2 from "./pages/SignupStep2.jsx";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
-import OTPVerification from "./pages/OTPVerification.jsx";
-import EmailConfirmed from "./pages/EmailConfirmed.jsx";
+import OTPVerification from "./pages/EmailConfirmed.jsx";
+import EmailVerification from "./pages/OTPVerification.jsx";
+import ResetPasswordOTPVerification from "./pages/ResetPasswordOTPVerification .jsx";
 import ResetPassword from "./pages/ResetPassword.jsx";
 import PasswordChangedSuccess from "./pages/PasswordChangedSuccess.jsx";
 import DestinationDetails from "./pages/DestinationDetails.jsx";
@@ -28,6 +29,7 @@ import { SelectedDestinationProvider } from "./components/SelectedDestinationCon
 import { FavoritesProvider } from "./components/FavoritesContext.jsx";
 import TripDiaryTab from "./components/TripDiaryTab.jsx";
 import UserProfile from "./pages/UserProfile.jsx";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 function AppContent() {
   const location = useLocation();
@@ -38,7 +40,9 @@ function AppContent() {
     location.pathname === "/forgot-password" ||
     location.pathname === "/otp-verification" ||
     location.pathname === "/email-confirmed" ||
+    location.pathname === "/verify-email" ||
     location.pathname === "/reset-password" ||
+    location.pathname === "/reset-password-otp" ||
     location.pathname === "/password-changed-success";
   return (
     <div className="min-h-screen bg-gray-50">
@@ -56,8 +60,10 @@ function AppContent() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/signup-step2" element={<SignupStep2 />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/otp-verification" element={<OTPVerification />} />
-        <Route path="/email-confirmed" element={<EmailConfirmed />} />
+        <Route path="/otp-verification" element={<EmailVerification />} />
+        <Route path="/email-confirmed" element={<OTPVerification />} />
+        <Route path="/reset-password-otp" element={<ResetPasswordOTPVerification />} />
+        <Route path="/verify-email" element={<EmailVerification />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route
           path="/password-changed-success"
@@ -73,15 +79,17 @@ function AppContent() {
 
 function App() {
   return (
-    <AuthProvider>
-      <SelectedDestinationProvider>
-        <FavoritesProvider>
-          <Router>
-            <AppContent />
-          </Router>
-        </FavoritesProvider>
-      </SelectedDestinationProvider>
-    </AuthProvider>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+      <AuthProvider>
+        <SelectedDestinationProvider>
+          <FavoritesProvider>
+            <Router>
+              <AppContent />
+            </Router>
+          </FavoritesProvider>
+        </SelectedDestinationProvider>
+      </AuthProvider>
+    </GoogleOAuthProvider>
   );
 }
 
